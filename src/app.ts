@@ -1,4 +1,5 @@
 import express from 'express';
+import { decode, encode } from './binary-utils';
 import { client, Journey, Leg } from './hafas-client';
 
 const app = express();
@@ -7,7 +8,6 @@ const port = 3000;
 app.get('/', (req, res) => {
     res.send('Please hit the /journeys request.');
 });
-
 
 const lineDesc = (l: Leg) => {
     if (typeof l.line !== "undefined" ){
@@ -20,13 +20,13 @@ const lineDesc = (l: Leg) => {
 
     return "other"
 }
-const journeyDebug = (j: Journey) => `${j.legs[0].departure} => ${j.legs[j.legs.length - 1].arrival}, ${j.legs.map(lineDesc).join(", ")}`
+const journeyText = (j: Journey) => `${j.legs[0].departure} => ${j.legs[j.legs.length - 1].arrival}, ${j.legs.map(lineDesc).join(", ")}`
 
 /**
  * @route GET /journeys
- * @queryparam from Name of the departure station
- * @queryparam to Name of the arrival station
- * @queryparam departure Time of departure in RFC3339/ISO8601 (e.g. 2021-10-06T08:05:00+02:00)
+ * @param from Name of the departure station
+ * @param to Name of the arrival station
+ * @param departure Time of departure in RFC3339/ISO8601 (e.g. 2021-10-06T08:05:00+02:00)
  */
 app.get('/journeys', async (req, res) => {
     const from = await client.locations(req.query.from as string, { results: 1 })
@@ -40,10 +40,30 @@ app.get('/journeys', async (req, res) => {
     const journeys = (await client.journeys(from[0], to[0], {
         results: 10,
         departure: req.query.departure as string
-    })).journeys.map(journeyDebug)
+    }))
+    .journeys.map(j => ({
+        journeyText: journeyText(j),
+        refreshToken: encode(j.refreshToken)
+    }))
     
     return res.send({ journeys })
- })
+})
+
+/**
+ * @route GET /cal
+ * @param refreshToken Token that identifies a journey including all legs on a specific day
+ */
+app.get("/cal", async (req, res) => {
+    const token_encoded = req.query.refreshToken;
+    if(!token_encoded)
+        return res.status(400).send({error: "Bad Request: refreshToken is not valid"})
+    
+    const token = decode(token_encoded as string);
+
+    const journey = await client.refreshJourney(token)
+    res.send(journey);
+})
+
 
 app.listen(port, () => {
     return console.log(`server is listening on ${port}`);

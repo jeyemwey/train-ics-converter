@@ -81,7 +81,7 @@ export type Journey = {
 }
 
 type HafasClient = {
-    locations: (query: String, opt?: {
+    locations: (query: string, opt?: {
         fuzzy?: Boolean, // find only exact matches?
         results?: Number, // how many search results?
         stops?: Boolean, // return stops/stations?
@@ -127,7 +127,16 @@ type HafasClient = {
         laterRef: never,
         journeys: Journey[],
         realtimeDataFrom: number | null,
-    }>
+    }>,
+    refreshJourney: (token: string, opt?: {
+        stopovers?: Boolean, // return stations on the way?
+        polylines?: Boolean, // return a shape for each leg?
+        tickets?: Boolean, // return tickets? only available with some profiles
+        subStops?: Boolean, // parse & expose sub-stops of stations?
+        entrances?: Boolean, // parse & expose entrances of stops/stations?
+        remarks?: Boolean, // parse & expose hints & warnings?
+        language?: 'en' // language to get results in
+    }) => Promise<Journey>
 }
 
 // create a client with the Deutsche Bahn profile
