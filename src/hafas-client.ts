@@ -1,13 +1,19 @@
+import { ArrivingDepartingWithPossibleDelay } from "./date-utils";
+
 const createClient = require('hafas-client')
 const dbProfile = require('hafas-client/p/db')
 
 type Id = never
-type IsoDate = string 	// ISO 8601 string (with stop/station timezone)
-type Mode = 'train' | 'bus' | 'watercraft' | 'taxi' | 'gondola' | 'aircraft' | 'car' | 'bicycle' | 'walking';
+export type Mode = 'train' | 'bus' | 'watercraft' | 'taxi' | 'gondola' | 'aircraft' | 'car' | 'bicycle' | 'walking';
 type Product = 'nationalExpress'| 'national'| 'regionalExp'| 'regional'| 'suburban'| 'bus'| 'ferry'| 'subway'| 'tram'| 'taxi';
 
 type Price = { amount: number, currency: 'EUR' | 'GBP' | 'CHF' /* ISO 4217 code, required */ } | { amount: null, hint?: string }
-type Stopover = {}
+export type Stopover = ArrivingDepartingWithPossibleDelay & {
+	type: 'stopover',
+	stop: StationRef,
+	arrivalPlatform?: string,
+	departurePlatform?: string,
+}
 type StationRef = Id | Station | Stop
 type Station = {
     type: 'station',
@@ -16,7 +22,7 @@ type Station = {
     location?: Location,
     regions?: Id[]
 }
-type Stop = {
+export type Stop = {
     type: 'stop',
     id: Id,
     name: string,
@@ -25,9 +31,8 @@ type Stop = {
     products: {
         [K in Product]: Boolean
     }
-
 }
-type Location = {
+export type Location = {
     type: 'location', // required
     name?: string,
     address?: string,
@@ -37,16 +42,12 @@ type Location = {
 }
 type Operator = { type: 'operator', id: Id, name: string }
 
-export type Leg = ({ arrival: IsoDate, departure: IsoDate | null } | { arrival: IsoDate | null, departure: IsoDate }) & {
+export type Leg = ArrivingDepartingWithPossibleDelay & {
     type: 'leg', // required
     id?: Id, // unique, optional
     origin: StationRef,
     destination: StationRef,
-    plannedDeparture?: IsoDate,
-    departureDelay?: Number,
     departurePlatform?: string, // string, optional
-    plannedArrival: IsoDate,
-    arrivalDelay?: Number,
     arrivalPlatform?: string,
     stopovers: Stopover[],
     schedule: Id,
