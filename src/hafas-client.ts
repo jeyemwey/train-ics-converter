@@ -40,7 +40,7 @@ export type Location = {
     latitude?: number,
     altitude?: number
 }
-type Operator = { type: 'operator', id: Id, name: string }
+type Operator = Id | { type: 'operator', id: Id, name: string }
 
 export type Leg = ArrivingDepartingWithPossibleDelay & {
     type: 'leg', // required
@@ -54,7 +54,7 @@ export type Leg = ArrivingDepartingWithPossibleDelay & {
     mode: Mode,
     subMode: never,
     public: boolean,
-    operator: Operator | Id,
+    operator?: Operator | Id,
     price: Price,
     loadFactor?: 'very-high' | string,
     line: Line,
@@ -70,7 +70,7 @@ type Line = {
     productName: string,
     mode: Mode,
     product: Product,
-    operator: Operator
+    operator?: Operator
 }
 
 export type Journey = {

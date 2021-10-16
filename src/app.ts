@@ -1,6 +1,7 @@
 import express from 'express';
 import { decode, encode } from './binary-utils';
 import { client, Journey, Leg } from './hafas-client';
+import { legToEvent, toCalendar } from './ical';
 
 const app = express();
 const port = 3000;
@@ -61,8 +62,10 @@ app.get("/cal", async (req, res) => {
     const token = decode(token_encoded as string);
 
     const journey = await client.refreshJourney(token)
-    res.send(journey);
-})
+    const calendar = toCalendar(journey)
+
+    return calendar.serve(res)
+});
 
 
 app.listen(port, () => {
