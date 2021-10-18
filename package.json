@@ -1,7 +1,7 @@
 {
   "name": "train-ics-converter",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend application for train-ics-converter",
   "main": "dist/app.js",
   "scripts": {
     "dev": "./node_modules/nodemon/bin/nodemon.js",
@@ -9,7 +9,8 @@
     "test": "ts-mocha src/**/*.spec.ts"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jannik<jannik@outlook.com>",
+  "private": true,
   "license": "ISC",
   "devDependencies": {
     "@types/expect": "^24.3.0",
@@ -28,6 +29,7 @@
   },
   "dependencies": {
     "@touch4it/ical-timezones": "^1.8.1",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "hafas-client": "^5.19.1",
     "ical-generator": "^3.0.1",

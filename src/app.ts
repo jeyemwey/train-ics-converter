@@ -1,10 +1,20 @@
+import cors from 'cors';
 import express from 'express';
 import { decode, encode } from './binary-utils';
+import { toShortDate } from './date-utils';
 import { client, Journey, Leg } from './hafas-client';
 import { toCalendar } from './ical';
 
 const app = express();
-const port = 3000;
+const port = 3001;
+
+app.use(function (req, res, next) {
+    console.log("Hello")
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'content-type');
+    next();
+});
 
 app.get('/', (req, res) => {
     res.send('Please hit the /journeys request.');
@@ -21,7 +31,7 @@ const lineDesc = (l: Leg) => {
 
     return "other"
 }
-const journeyText = (j: Journey) => `${j.legs[0].departure} => ${j.legs[j.legs.length - 1].arrival}, ${j.legs.map(lineDesc).join(", ")}`
+const journeyText = (j: Journey) => `${toShortDate(j.legs[0].departure)} => ${toShortDate(j.legs[j.legs.length - 1].arrival)}: ${j.legs.map(lineDesc).join(", ")}`
 
 /**
  * @route GET /journeys
