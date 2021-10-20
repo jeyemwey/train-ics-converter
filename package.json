@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "./node_modules/nodemon/bin/nodemon.js",
     "start": "tsc && node dist/app.js",
-    "test": "ts-mocha src/**/*.spec.ts"
+    "test": "ts-mocha src/**/*.spec.ts",
+    "build": "esbuild src/app.ts --bundle --platform=node --outdir=dist --minify"
   },
   "keywords": [],
   "author": "Jannik<jannik@outlook.com>",
@@ -33,6 +34,7 @@
     "express": "^4.17.1",
     "hafas-client": "^5.19.1",
     "ical-generator": "^3.0.1",
-    "node-emoji": "^1.11.0"
+    "node-emoji": "^1.11.0",
+    "esbuild": "^0.13.4"
   }
 }

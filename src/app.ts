@@ -1,23 +1,23 @@
 import cors from 'cors';
 import express from 'express';
+import path from 'path';
 import { decode, encode } from './binary-utils';
 import { toShortDate } from './date-utils';
 import { client, Journey, Leg } from './hafas-client';
 import { toCalendar } from './ical';
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT;
 
 app.use(function (req, res, next) {
-    console.log("Hello")
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET');
     res.setHeader('Access-Control-Allow-Headers', 'content-type');
     next();
 });
 
-app.get('/', (req, res) => {
-    res.send('Please hit the /journeys request.');
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 const lineDesc = (l: Leg) => {
@@ -44,7 +44,7 @@ app.get('/journeys', async (req, res) => {
     const to = await client.locations(req.query.to as string, { results: 1 })
     const departure = new Date(req.query.departure as string);
 
-    if (departure.getTime() === NaN) {
+    if (Object.is(departure.getTime(), NaN)) {
         return res.status(400).send({ error: "Bad Request: Bad departure time" })
     }
 

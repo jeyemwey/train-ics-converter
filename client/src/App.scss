@@ -4,4 +4,8 @@ $theme-colors: (
     "primary": green
 );
 
+// post-css is broken currently, so this is disabling the problem area.
+// see https://github.com/twbs/bootstrap/issues/35018#issuecomment-923905583
+$enable-grid-classes: false;
+
 @import "~bootstrap/scss/bootstrap";
