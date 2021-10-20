@@ -42,7 +42,7 @@ function App() {
     }
 
     setPending(true);
-    fetch(BACKEND_URL + "/journeys?" + new URLSearchParams({
+    fetch(BACKEND_URL + "journeys?" + new URLSearchParams({
       from, to, departure: departure.toISOString()
     }))
       .then(res => res.json())
@@ -51,7 +51,7 @@ function App() {
   }
 
   const icalButton = (refreshToken: string): ReactElement =>
-    <Button href={BACKEND_URL + "/cal?" + new URLSearchParams({ refreshToken })}>Kalender</Button>;
+    <Button href={BACKEND_URL + "cal?" + new URLSearchParams({ refreshToken })}>Kalender</Button>;
 
   return (
     <>
