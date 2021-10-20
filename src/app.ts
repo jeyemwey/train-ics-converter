@@ -7,7 +7,7 @@ import { client, Journey, Leg } from './hafas-client';
 import { toCalendar } from './ical';
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT ?? 8080;
 
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,9 +16,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
-});
 
 const lineDesc = (l: Leg) => {
     if (typeof l.line !== "undefined") {
@@ -81,6 +78,8 @@ app.get("/cal", async (req, res) => {
 app.get('/_health', (req, res) => {
     res.status(200).send('ok')
 })
+
+app.use(express.static(__dirname + "/public"));
 
 app.listen(port, () => {
     return console.log(`server is listening on ${port}, running in ${process.env.NODE_ENV} mode`);
