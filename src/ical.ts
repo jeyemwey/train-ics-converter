@@ -1,5 +1,4 @@
 import { Journey, Leg } from "./hafas-client"
-import emoji from "node-emoji"
 import { dateWithDelay, toShortDate } from "./date-utils"
 import ical, { ICalCalendar } from 'ical-generator';
 import { getVtimezoneComponent } from "@touch4it/ical-timezones";
@@ -16,37 +15,37 @@ export type Event = {
 const getEmoji = (leg: Leg): string => {
     switch (leg.line?.product) {
         case 'bus':
-            return emoji.get("bus")
+            return "🚌"
         case 'national':
-            return emoji.get("high-speed-train")
+            return "🚄"
         case 'nationalExpress':
-            return emoji.get("bullet-train")
+            return "🚅"
         case 'subway':
-            return emoji.get("metro");
+            return "🚇"
         case 'tram':
-            return emoji.get("light-rail")
+            return "🚊"
     }
 
     switch (leg.mode) {
         case 'bus':
-            return emoji.get("bus")
+            return "🚌"
         case 'watercraft':
-            return emoji.get("ferry")
+            return "🚢"
         case 'taxi':
-            return emoji.get("taxi")
+            return "🚕"
         case 'gondola':
-            return emoji.get("aerial_tramway")
+            return "🚡"
         case 'aircraft':
-            return emoji.get("airplane")
+            return "✈️"
         case 'car':
-            return emoji.get("car")
+            return "🚗"
         case 'bicycle':
-            return emoji.get("bicycle")
+            return "🚲"
         case 'walking':
-            return emoji.get("person-walking")
+            return "🚶"
         case 'train':
         default:
-            return emoji.get("train")
+            return "🚆"
     }
 }
 

@@ -2,7 +2,6 @@ import 'mocha';
 import { strict as assert } from 'assert';
 import { Event, legToEvent } from './ical';
 import { Leg, Stop, Stopover } from './hafas-client';
-import emoji from "node-emoji"
 
 describe("leg to calendar event", () => {
     const baseLeg = {
@@ -17,7 +16,7 @@ describe("leg to calendar event", () => {
     } as Leg;
 
     const baseEvent = {
-        summary: emoji.get("train") + " RE 1: Beginn -> Ende",
+        summary: "🚆 RE 1: Beginn -> Ende",
         location: "Beginn",
         start: new Date("2021-10-16T22:00:00+02:00"),
         end: new Date("2021-10-16T22:30:00+02:00"),
@@ -40,7 +39,7 @@ describe("leg to calendar event", () => {
 
         const expected = {
             ...baseEvent,
-            summary: emoji.get("train") + " RE 1: Beginn (Gl. 104 D-G) -> Ende (Gl. 9 3/4)"
+            summary: "🚆 RE 1: Beginn (Gl. 104 D-G) -> Ende (Gl. 9 3/4)"
         }
 
         const event = legToEvent(leg);
