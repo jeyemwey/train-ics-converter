@@ -103,7 +103,7 @@ function App() {
 
       <Container>
         <Row>
-          <Col>
+          <Col md={6}>
             <Form style={{ marginBottom: "2rem" }}>
               <Form.Group className="mb-3" controlId="formOrigin">
                 <Form.Label>Start</Form.Label>
@@ -140,7 +140,7 @@ function App() {
               </Button>
             </Form>
           </Col>
-          <Col>
+          <Col md={6}>
             <Table striped bordered hover  style={{ marginBottom: "2rem" }}>
               <thead>
                 <tr>
