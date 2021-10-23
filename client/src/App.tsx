@@ -57,7 +57,13 @@ function App() {
     <>
       <Navbar collapseOnSelect expand="md">
         <Container>
-          <Navbar.Brand href="#home">Train ICS Converter</Navbar.Brand>
+          <Navbar.Brand href="#home"><img
+            src="/train.png"
+            width="30"
+            height="30"
+            className="d-inline-block align-top"
+            alt="Train icon"
+          />{" "}Train ICS Converter</Navbar.Brand>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">
             <Navbar.Text>
