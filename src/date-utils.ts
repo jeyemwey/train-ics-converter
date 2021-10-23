@@ -14,9 +14,9 @@ export type ArrivingDepartingWithPossibleDelay = ({
     plannedDeparture?: IsoDate,
 }
 
-export const toShortDate = (d: IsoDate, departureTZOffset: number): string => {
+export const toShortDate = (d: IsoDate): string => {
     const date = new Date(d)
-    date.setUTCMinutes(date.getMinutes() - departureTZOffset);
+    date.setUTCMinutes(date.getMinutes());
 
     return new Intl.DateTimeFormat('de-DE', {
         hour: '2-digit',

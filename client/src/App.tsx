@@ -66,8 +66,7 @@ function App() {
     fetch(BACKEND_URL + "journeys?" + new URLSearchParams({
       from,
       to,
-      departure: departure.toISOString(),
-      departureTZOffset: departure.getTimezoneOffset().toString()
+      departure: departure.toISOString()
     }))
       .then(res => res.json())
       .then(({ journeys, error }: { journeys?: JourneyResponse[], error?: string }) => {

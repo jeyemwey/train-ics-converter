@@ -51,7 +51,7 @@ const getEmoji = (leg: Leg): string => {
 
 const getStopovers = (leg: Leg): string =>
     leg.stopovers.map((s) =>
-        `${s.stop.name} (an: ${toShortDate(s.arrival, 0)}${s.arrivalDelay ? ` + ${s.arrivalDelay}min` : ""}, ab: ${toShortDate(s.departure, 0)}${s.departureDelay ? ` + ${s.departureDelay}min` : ""})`
+        `${s.stop.name} (an: ${toShortDate(s.arrival)}${s.arrivalDelay ? ` + ${s.arrivalDelay}min` : ""}, ab: ${toShortDate(s.departure)}${s.departureDelay ? ` + ${s.departureDelay}min` : ""})`
     ).join(", ");
 
 export const legToEvent = (leg: Leg): Event | null => {
@@ -87,13 +87,9 @@ export const toCalendar = (journey: Journey): ICalCalendar => {
         prodId: "//cal.iamjannik.me//Train-ICS-Converter//EN",
     });
 
-    calendar.timezone({
-        name: 'FOO',
-        generator: getVtimezoneComponent
-    });
-
     events.forEach((e) => {
-        calendar.createEvent(e);
+        const event = calendar.createEvent(e);
+        event.timezone('Europe/Berlin');
     });
 
     return calendar;
