@@ -10,12 +10,13 @@ type JourneyResponse = {
   refreshToken: string;
 }
 
+const formatInputDateTime = (d: Date): string => {
+  const out = new Date(d); // don't modify the date object
+  out.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return out.toISOString().slice(0, 16);
+}
 function App() {
-  const [departure, setDeparture] = useState<Date>(() => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now;
-  });
+  const [departure, setDeparture] = useState<Date>(new Date());
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
   const [journeys, setJourneys] = useState<JourneyResponse[]>([]);
@@ -76,18 +77,34 @@ function App() {
       <Container>
         <Row>
           <Col>
-            <Form style={{marginBottom: "2rem"}}>
+            <Form style={{ marginBottom: "2rem" }}>
               <Form.Group className="mb-3" controlId="formOrigin">
                 <Form.Label>Start</Form.Label>
-                <Form.Control type="text" placeholder="Ort der Abfahrt" value={from} onChange={e => setFrom(e.target.value)} required isInvalid={fromInvalid} />
+                <Form.Control
+                  type="text"
+                  placeholder="Ort der Abfahrt"
+                  value={from}
+                  onChange={e => setFrom(e.target.value)}
+                  required
+                  isInvalid={fromInvalid} />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formDestination">
                 <Form.Label>Ziel</Form.Label>
-                <Form.Control type="text" placeholder="Ort der Ankunft" value={to} onChange={e => setTo(e.target.value)} required isInvalid={toInvalid} />
+                <Form.Control
+                  type="text"
+                  placeholder="Ort der Ankunft"
+                  value={to}
+                  onChange={e => setTo(e.target.value)}
+                  required
+                  isInvalid={toInvalid} />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formDestination">
                 <Form.Label>Abfahrtzeit</Form.Label>
-                <Form.Control type="datetime-local" value={departure.toISOString().slice(0, 16)} onChange={e => setDeparture(new Date(e.target.value))} required />
+                <Form.Control
+                  type="datetime-local"
+                  value={formatInputDateTime(departure)}
+                  onChange={e => setDeparture(new Date(e.target.value))}
+                  required />
               </Form.Group>
 
               <Button variant="primary" type="submit" onClick={handleSubmit}>
