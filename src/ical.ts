@@ -51,19 +51,19 @@ const getEmoji = (leg: Leg): string => {
 
 const getStopovers = (leg: Leg): string =>
     leg.stopovers.map((s) =>
-        `${s.stop.name} (an: ${toShortDate(s.arrival)}${s.arrivalDelay ? ` + ${s.arrivalDelay}min` : ""}, ab: ${toShortDate(s.departure)}${s.departureDelay ? ` + ${s.departureDelay}min` : ""})`
+        `${s.stop.name} (an: ${toShortDate(s.arrival, 0)}${s.arrivalDelay ? ` + ${s.arrivalDelay}min` : ""}, ab: ${toShortDate(s.departure, 0)}${s.departureDelay ? ` + ${s.departureDelay}min` : ""})`
     ).join(", ");
 
-export const legToEvent = (leg: Leg): Event | null => {
+export const legToEvent = (leg: Leg, departureTZOffset: number): Event | null => {
     if (leg.mode === "walking" || leg.mode === "bicycle" || leg.walking) {
         return null
     }
 
     const departurePlatform = leg.departurePlatform ? ` (Gl. ${leg.departurePlatform})` : "";
-    const departure = dateWithDelay(leg.departure, leg.departureDelay);
+    const departure = dateWithDelay(leg.departure, leg.departureDelay - departureTZOffset);
 
     const arrivalPlatform = leg.arrivalPlatform ? ` (Gl. ${leg.arrivalPlatform})` : "";
-    const arrival = dateWithDelay(leg.arrival, leg.arrivalDelay);
+    const arrival = dateWithDelay(leg.arrival, leg.arrivalDelay - departureTZOffset);
 
     if (typeof leg.stopovers === "undefined") leg.stopovers = [];
     const stopoverList = (leg.stopovers.length !== 0) ? `\nZwischenstop${leg.stopovers.length === 1 ? "" : "s"}: ${getStopovers(leg)}` : "";
@@ -77,10 +77,10 @@ export const legToEvent = (leg: Leg): Event | null => {
     }
 }
 
-export const toCalendar = (journey: Journey): ICalCalendar => {
+export const toCalendar = (journey: Journey, departureTZOffset: number): ICalCalendar => {
     const origin = journey.legs[0].origin.name
     const destination = journey.legs[journey.legs.length - 1].destination.name
-    const events = journey.legs.map(legToEvent).filter(e => e !== null)
+    const events = journey.legs.map(leg => legToEvent(leg, departureTZOffset)).filter(e => e !== null)
 
     const calendar = ical({
         name: `Reise von ${origin} nach ${destination}`,
@@ -89,7 +89,7 @@ export const toCalendar = (journey: Journey): ICalCalendar => {
 
     events.forEach((e) => {
         const event = calendar.createEvent(e);
-        event.timezone('Europe/Berlin');
+        event.timezone('Europe/Berlin')
     });
 
     return calendar;

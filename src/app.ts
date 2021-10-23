@@ -1,4 +1,6 @@
+import cors from 'cors';
 import express from 'express';
+import path from 'path';
 import { decode, encode } from './binary-utils';
 import { toShortDate } from './date-utils';
 import { client, Journey, Leg } from './hafas-client';
@@ -26,7 +28,7 @@ const lineDesc = (l: Leg) => {
 
     return "other"
 }
-const journeyText = (j: Journey) => `${toShortDate(j.legs[0].departure)} => ${toShortDate(j.legs[j.legs.length - 1].arrival)}: ${j.legs.map(lineDesc).join(", ")}`
+const journeyText = (j: Journey, departureTZOffset: number) => `${toShortDate(j.legs[0].departure, departureTZOffset)} => ${toShortDate(j.legs[j.legs.length - 1].arrival, departureTZOffset)}: ${j.legs.map(lineDesc).join(", ")}`
 
 /**
  * @route GET /journeys
@@ -38,6 +40,7 @@ app.get('/journeys', async (req, res) => {
     const from = await client.locations(req.query.from as string, { results: 1 })
     const to = await client.locations(req.query.to as string, { results: 1 })
     const departure = new Date(req.query.departure as string);
+    const departureTZOffset = parseInt(req.query.departureTZOffset as string);
 
     if (Object.is(departure.getTime(), NaN)) {
         return res.status(400).send({ error: "Bad Request: Bad departure time" })
@@ -52,7 +55,7 @@ app.get('/journeys', async (req, res) => {
         departure: departure
     }))
         .journeys.map(j => ({
-            journeyText: journeyText(j),
+            journeyText: journeyText(j, departureTZOffset),
             refreshToken: encode(j.refreshToken)
         }))
 
@@ -70,8 +73,12 @@ app.get("/cal", async (req, res) => {
 
     const token = decode(token_encoded as string);
 
+    const departureTZOffset = parseInt(req.query.departureTZOffset as string)
+        - new Date().getTimezoneOffset(); // also remove the server tz offset
+    console.log(departureTZOffset)
+
     const journey = await client.refreshJourney(token);
-    const calendar = toCalendar(journey);
+    const calendar = toCalendar(journey, departureTZOffset);
 
     return calendar.serve(res);
 });

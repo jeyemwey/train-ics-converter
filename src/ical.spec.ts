@@ -14,6 +14,7 @@ describe("leg to calendar event", () => {
         mode: "train",
         stopovers: []
     } as Leg;
+    const TIMEZONE_OFFSET = -120;
 
     const baseEvent = {
         summary: "🚆 RE 1: Beginn -> Ende",
@@ -26,7 +27,7 @@ describe("leg to calendar event", () => {
     it("works for simple leg", () => {
         const leg = { ...baseLeg } as Leg;
 
-        const event = legToEvent(leg);
+        const event = legToEvent(leg, TIMEZONE_OFFSET);
         assert.deepStrictEqual(event, baseEvent);
     });
 
@@ -42,7 +43,7 @@ describe("leg to calendar event", () => {
             summary: "🚆 RE 1: Beginn (Gl. 104 D-G) -> Ende (Gl. 9 3/4)"
         }
 
-        const event = legToEvent(leg);
+        const event = legToEvent(leg, TIMEZONE_OFFSET);
         assert.deepStrictEqual(event, expected);
     });
 
@@ -59,7 +60,7 @@ describe("leg to calendar event", () => {
             end: new Date("2021-10-16T22:40:00+02:00")
         }
 
-        const event = legToEvent(leg);
+        const event = legToEvent(leg, TIMEZONE_OFFSET);
         assert.deepStrictEqual(event, expected);
     });
 
@@ -85,7 +86,7 @@ describe("leg to calendar event", () => {
                 description: baseEvent.description + "\nZwischenstop: Stopover1 (an: 22:10, ab: 22:11)"
             } as Event;
 
-            const event = legToEvent(leg);
+            const event = legToEvent(leg, TIMEZONE_OFFSET);
             assert.deepStrictEqual(event, expected);
         });
 
@@ -120,7 +121,7 @@ describe("leg to calendar event", () => {
                 description: baseEvent.description + "\nZwischenstops: Stopover1 (an: 22:10, ab: 22:11), Stopover2 (an: 22:20, ab: 22:21)"
             } as Event;
 
-            const event = legToEvent(leg);
+            const event = legToEvent(leg, TIMEZONE_OFFSET);
             assert.deepStrictEqual(event, expected);
         });
 
@@ -147,7 +148,7 @@ describe("leg to calendar event", () => {
                 description: baseEvent.description + "\nZwischenstop: Stopover1 (an: 22:10 + 5min, ab: 22:11 + 5min)"
             } as Event;
 
-            const event = legToEvent(leg);
+            const event = legToEvent(leg, TIMEZONE_OFFSET);
             assert.deepStrictEqual(event, expected);
         })
     });
