@@ -28,7 +28,7 @@ const lineDesc = (l: Leg) => {
 
     return "other"
 }
-const journeyText = (j: Journey) => `${toShortDate(j.legs[0].departure)} => ${toShortDate(j.legs[j.legs.length - 1].arrival)}: ${j.legs.map(lineDesc).join(", ")}`
+const journeyText = (j: Journey, departureTZOffset: number) => `${toShortDate(j.legs[0].departure, departureTZOffset)} => ${toShortDate(j.legs[j.legs.length - 1].arrival, departureTZOffset)}: ${j.legs.map(lineDesc).join(", ")}`
 
 /**
  * @route GET /journeys
@@ -40,6 +40,7 @@ app.get('/journeys', async (req, res) => {
     const from = await client.locations(req.query.from as string, { results: 1 })
     const to = await client.locations(req.query.to as string, { results: 1 })
     const departure = new Date(req.query.departure as string);
+    const departureTZOffset = parseInt(req.query.departureTZOffset as string);
 
     if (Object.is(departure.getTime(), NaN)) {
         return res.status(400).send({ error: "Bad Request: Bad departure time" })
@@ -47,10 +48,10 @@ app.get('/journeys', async (req, res) => {
 
     const journeys = (await client.journeys(from[0], to[0], {
         results: 10,
-        departure: req.query.departure as string
+        departure: departure
     }))
         .journeys.map(j => ({
-            journeyText: journeyText(j),
+            journeyText: journeyText(j, departureTZOffset),
             refreshToken: encode(j.refreshToken)
         }))
 

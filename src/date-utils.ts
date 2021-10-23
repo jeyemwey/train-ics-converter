@@ -14,23 +14,27 @@ export type ArrivingDepartingWithPossibleDelay = ({
     plannedDeparture?: IsoDate,
 }
 
-export const toShortDate = (d: IsoDate): string =>
-    new Intl.DateTimeFormat('de-DE', {
+export const toShortDate = (d: IsoDate, departureTZOffset: number): string => {
+    const date = new Date(d)
+    date.setUTCMinutes(date.getMinutes() - departureTZOffset);
+
+    return new Intl.DateTimeFormat('de-DE', {
         hour: '2-digit',
         minute: '2-digit'
-    }).format(new Date(d));
+    }).format(date);
+}
 
-export const toDateObj = (d: IsoDate): Date => 
+export const toDateObj = (d: IsoDate): Date =>
     new Date(d)
 
 export const dateWithDelay = (d: IsoDate, delay?: number): Date => {
     const scheduled = new Date(d);
 
-    if ( typeof delay !=="number" || !delay) {
+    if (typeof delay !== "number" || !delay) {
         return scheduled;
     }
 
-    const date= new Date(scheduled.getTime() + (delay ?? 0) * 60 * 1000);
+    const date = new Date(scheduled.getTime() + (delay ?? 0) * 60 * 1000);
 
     return date;
 }

@@ -64,12 +64,15 @@ function App() {
 
     setPending(true);
     fetch(BACKEND_URL + "journeys?" + new URLSearchParams({
-      from, to, departure: departure.toISOString()
+      from,
+      to,
+      departure: departure.toISOString(),
+      departureTZOffset: departure.getTimezoneOffset().toString()
     }))
       .then(res => res.json())
       .then(({ journeys, error }: { journeys?: JourneyResponse[], error?: string }) => {
         setError(error)
-        
+
         if (journeys) {
           setJourneys(journeys)
         }
@@ -141,7 +144,7 @@ function App() {
             </Form>
           </Col>
           <Col md={6}>
-            <Table striped bordered hover  style={{ marginBottom: "2rem" }}>
+            <Table striped bordered hover style={{ marginBottom: "2rem" }}>
               <thead>
                 <tr>
                   <th>Reise</th>
