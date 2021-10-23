@@ -1,6 +1,6 @@
 
-import React, { MouseEventHandler, ReactElement, useState } from 'react';
-import { Button, Col, Container, Form, Navbar, ProgressBar, Row, Table } from 'react-bootstrap';
+import React, { MouseEventHandler, ReactElement, useEffect, useState } from 'react';
+import { Alert, Button, Col, Container, Form, Navbar, ProgressBar, Row, Table } from 'react-bootstrap';
 
 import "./App.scss";
 import { BACKEND_URL } from './constants';
@@ -11,18 +11,31 @@ type JourneyResponse = {
 }
 
 const formatInputDateTime = (d: Date): string => {
+  if (isNaN(d.getTime())) {
+    return "";
+  }
+
   const out = new Date(d); // don't modify the date object
   out.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return out.toISOString().slice(0, 16);
+  const str = out.toISOString().slice(0, 16);
+  return str;
 }
+
 function App() {
   const [departure, setDeparture] = useState<Date>(new Date());
+  const [formattedDeparture, setFormattedDeparture] = useState<string>(formatInputDateTime(departure));
   const [from, setFrom] = useState<string>("");
   const [to, setTo] = useState<string>("");
   const [journeys, setJourneys] = useState<JourneyResponse[]>([]);
   const [fromInvalid, setFromInvalid] = useState(false);
   const [toInvalid, setToInvalid] = useState(false);
+  const [departureInvalid, setDepartureInvalid] = useState(false);
   const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | undefined>("");
+
+  useEffect(() => {
+    setFormattedDeparture(formatInputDateTime(departure));
+  }, [departure]);
 
   const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
@@ -32,13 +45,20 @@ function App() {
     } else {
       setFromInvalid(false)
     }
+
     if (to === "") {
       setToInvalid(true)
     } else {
       setToInvalid(false)
     }
 
-    if (from === "" || to === "") {
+    if (isNaN(departure.getTime())) {
+      setDepartureInvalid(true);
+    } else {
+      setDepartureInvalid(false);
+    }
+
+    if (from === "" || to === "" || isNaN(departure.getTime())) {
       return
     }
 
@@ -47,7 +67,14 @@ function App() {
       from, to, departure: departure.toISOString()
     }))
       .then(res => res.json())
-      .then(({ journeys }: { journeys: JourneyResponse[] }) => setJourneys(journeys))
+      .then(({ journeys, error }: { journeys?: JourneyResponse[], error?: string }) => {
+        setError(error)
+        
+        if (journeys) {
+          setJourneys(journeys)
+        }
+      })
+      .catch(error => setError(error.toString()))
       .finally(() => setPending(false))
   }
 
@@ -102,9 +129,10 @@ function App() {
                 <Form.Label>Abfahrtzeit</Form.Label>
                 <Form.Control
                   type="datetime-local"
-                  value={formatInputDateTime(departure)}
+                  value={formattedDeparture}
                   onChange={e => setDeparture(new Date(e.target.value))}
-                  required />
+                  required
+                  isInvalid={departureInvalid} />
               </Form.Group>
 
               <Button variant="primary" type="submit" onClick={handleSubmit}>
@@ -113,7 +141,7 @@ function App() {
             </Form>
           </Col>
           <Col>
-            <Table striped bordered hover>
+            <Table striped bordered hover  style={{ marginBottom: "2rem" }}>
               <thead>
                 <tr>
                   <th>Reise</th>
@@ -128,6 +156,7 @@ function App() {
               </tbody>
             </Table>
 
+            {error && <Alert variant={'danger'} style={{ marginBottom: "2rem" }}>{error}</Alert>}
             {pending && <ProgressBar animated now={100} />}
           </Col>
         </Row>
