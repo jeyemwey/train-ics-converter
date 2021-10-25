@@ -1,4 +1,4 @@
-import { Journey, Leg } from "./hafas-client"
+import { Journey, Leg, Product } from "./hafas-client"
 import { dateWithDelay, toShortDate } from "./date-utils"
 import ical, { ICalCalendar } from 'ical-generator';
 import { getVtimezoneComponent } from "@touch4it/ical-timezones";
@@ -76,7 +76,20 @@ const getTrwlLink = (leg: Leg): string => {
     return `\n\nTräwelling-Check In: ` + base_url + new URLSearchParams(args).toString()
 }
 
-export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink }: { leg: Leg, departureTZOffset: number, includeTrwlLink: boolean }): Event | null => {
+const getMarudorLink = (leg: Leg): string => {
+    // marudor.de only offers details for a subset of transport services
+    if ((["national", "nationalExpress", "regional", "regionalExp", "suburban"] as Product[]).includes(leg.line.product) === false) {
+        return "";
+    }
+
+    const base_url = "https://marudor.de/details/";
+
+    // TODO: Check if there is a cleaner way, e.g. with leg.tripId
+    // see: https://github.com/marudor/BahnhofsAbfahrten/issues/528
+    return `\n\nMarudor-Link: ` + base_url + leg.line.productName + " " + leg.line.fahrtNr + "/" + leg.departure + "?station=" + leg.origin.id;
+}
+
+export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMarudorLink }: { leg: Leg, departureTZOffset: number, includeTrwlLink: boolean, includeMarudorLink: boolean }): Event | null => {
     if (leg.mode === "walking" || leg.mode === "bicycle" || leg.walking) {
         return null
     }
@@ -95,17 +108,17 @@ export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink }: { leg: L
 
     return {
         summary: `${getEmoji(leg)} ${leg.line?.name}: ${leg.origin.name}${departurePlatform} -> ${leg.destination.name}${arrivalPlatform}`,
-        description: `${leg.line.operator?.name ? `Betreiber: ${leg.line.operator.name}` : ""}${stopoverList}${includeTrwlLink ? `${getTrwlLink(leg)}` : ""}`,
+        description: `${leg.line.operator?.name ? `Betreiber: ${leg.line.operator.name}` : ""}${stopoverList}${includeTrwlLink ? `${getTrwlLink(leg)}` : ""}${includeMarudorLink ? `${getMarudorLink(leg)}` : ""}`,
         start: departure,
         end: arrival,
         location: leg.origin.name
     }
 }
 
-export const toCalendar = ({ journey, departureTZOffset, includeTrwlLink }: { journey: Journey, departureTZOffset: number, includeTrwlLink: boolean }): ICalCalendar => {
+export const toCalendar = ({ journey, departureTZOffset, includeTrwlLink, includeMarudorLink }: { journey: Journey, departureTZOffset: number, includeTrwlLink: boolean, includeMarudorLink: boolean }): ICalCalendar => {
     const origin = journey.legs[0].origin.name
     const destination = journey.legs[journey.legs.length - 1].destination.name
-    const events = journey.legs.map(leg => legToEvent({ leg, departureTZOffset, includeTrwlLink })).filter(e => e !== null)
+    const events = journey.legs.map(leg => legToEvent({ leg, departureTZOffset, includeTrwlLink, includeMarudorLink })).filter(e => e !== null)
 
     const calendar = ical({
         name: `Reise von ${origin} nach ${destination}`,

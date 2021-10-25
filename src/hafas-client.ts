@@ -5,7 +5,7 @@ const dbProfile = require('hafas-client/p/db')
 
 type Id = never
 export type Mode = 'train' | 'bus' | 'watercraft' | 'taxi' | 'gondola' | 'aircraft' | 'car' | 'bicycle' | 'walking';
-type Product = 'nationalExpress'| 'national'| 'regionalExp'| 'regional'| 'suburban'| 'bus'| 'ferry'| 'subway'| 'tram'| 'taxi';
+export type Product = 'nationalExpress'| 'national'| 'regionalExp'| 'regional'| 'suburban'| 'bus'| 'ferry'| 'subway'| 'tram'| 'taxi';
 
 type Price = { amount: number, currency: 'EUR' | 'GBP' | 'CHF' /* ISO 4217 code, required */ } | { amount: null, hint?: string }
 export type Stopover = ArrivingDepartingWithPossibleDelay & {
