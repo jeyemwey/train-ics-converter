@@ -49,12 +49,34 @@ const getEmoji = (leg: Leg): string => {
     }
 }
 
-const getStopovers = (leg: Leg): string =>
-    leg.stopovers.map((s) =>
-        `${s.stop.name} (an: ${toShortDate(s.arrival, 0)}${s.arrivalDelay ? ` + ${s.arrivalDelay}min` : ""}, ab: ${toShortDate(s.departure, 0)}${s.departureDelay ? ` + ${s.departureDelay}min` : ""})`
+const getStopovers = (leg: Leg): string => {
+    // drop the first and last leg
+    leg.stopovers.shift();
+    leg.stopovers.pop();
+    
+    return leg.stopovers.map((s) => {
+        const arrival = s.arrival === null ? "" : `an: ${toShortDate(s.arrival, 0)}${s.arrivalDelay ? ` + ${s.arrivalDelay}min` : ""}`;
+        const splitter = s.arrival !== null && s.departure !== null ? ", " : "";
+        const departure = s.departure === null ? "" : `ab: ${toShortDate(s.departure, 0)}${s.departureDelay ? ` + ${s.departureDelay}min` : ""}`;
+        return `${s.stop.name} (${arrival}${splitter}${departure})`;
+    }
     ).join(", ");
+}
 
-export const legToEvent = (leg: Leg, departureTZOffset: number): Event | null => {
+const getTrwlLink = (leg: Leg): string => {
+    const base_url = "https://traewelling.de/trains/trip?";
+
+    const args = {
+        tripID: leg.tripId,
+        lineName: leg.line.name,
+        start: leg.origin.id,
+        departure: leg.departure
+    }
+
+    return `\n\nTräwelling-Check In: ` + base_url + new URLSearchParams(args).toString()
+}
+
+export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink }: { leg: Leg, departureTZOffset: number, includeTrwlLink: boolean }): Event | null => {
     if (leg.mode === "walking" || leg.mode === "bicycle" || leg.walking) {
         return null
     }
@@ -65,22 +87,25 @@ export const legToEvent = (leg: Leg, departureTZOffset: number): Event | null =>
     const arrivalPlatform = leg.arrivalPlatform ? ` (Gl. ${leg.arrivalPlatform})` : "";
     const arrival = dateWithDelay(leg.arrival, leg.arrivalDelay - departureTZOffset);
 
-    if (typeof leg.stopovers === "undefined") leg.stopovers = [];
-    const stopoverList = (leg.stopovers.length !== 0) ? `\nZwischenstop${leg.stopovers.length === 1 ? "" : "s"}: ${getStopovers(leg)}` : "";
+    if (typeof leg.stopovers === "undefined"
+         || leg.stopovers.length === 2) { // origin and destination are part of the stopovers list, if available
+        leg.stopovers = [];
+    } 
+    const stopoverList = (leg.stopovers.length !== 0) ? `\nZwischenstop${leg.stopovers.length === 3 ? "" : "s"}: ${getStopovers(leg)}` : "";
 
     return {
         summary: `${getEmoji(leg)} ${leg.line?.name}: ${leg.origin.name}${departurePlatform} -> ${leg.destination.name}${arrivalPlatform}`,
-        description: `${leg.line.operator?.name ? `Betreiber: ${leg.line.operator.name}` : ""}${stopoverList}`,
+        description: `${leg.line.operator?.name ? `Betreiber: ${leg.line.operator.name}` : ""}${stopoverList}${includeTrwlLink ? `${getTrwlLink(leg)}` : ""}`,
         start: departure,
         end: arrival,
         location: leg.origin.name
     }
 }
 
-export const toCalendar = (journey: Journey, departureTZOffset: number): ICalCalendar => {
+export const toCalendar = ({ journey, departureTZOffset, includeTrwlLink }: { journey: Journey, departureTZOffset: number, includeTrwlLink: boolean }): ICalCalendar => {
     const origin = journey.legs[0].origin.name
     const destination = journey.legs[journey.legs.length - 1].destination.name
-    const events = journey.legs.map(leg => legToEvent(leg, departureTZOffset)).filter(e => e !== null)
+    const events = journey.legs.map(leg => legToEvent({ leg, departureTZOffset, includeTrwlLink })).filter(e => e !== null)
 
     const calendar = ical({
         name: `Reise von ${origin} nach ${destination}`,

@@ -32,6 +32,7 @@ function App() {
   const [departureInvalid, setDepartureInvalid] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | undefined>("");
+  const [includeTrwlLink, setIncludeTrwlLink] = useState(false);
 
   useEffect(() => {
     setFormattedDeparture(formatInputDateTime(departure));
@@ -84,7 +85,8 @@ function App() {
   const icalButton = (refreshToken: string): ReactElement =>
     <Button href={BACKEND_URL + "cal?" + new URLSearchParams({
       refreshToken,
-      departureTZOffset: departure.getTimezoneOffset().toString()
+      departureTZOffset: departure.getTimezoneOffset().toString(),
+      includeTrwlLink: includeTrwlLink ? "true" : "false"
     })}>Kalender</Button>;
 
   return (
@@ -139,6 +141,16 @@ function App() {
                   onChange={e => setDeparture(new Date(e.target.value))}
                   required
                   isInvalid={departureInvalid} />
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formDestination">
+                <Form.Check
+                  type={"checkbox"}
+                  id={"includeTrwlLink"}
+                  label={"Träwelling Check-in-Link einfügen"}
+                  checked={includeTrwlLink}
+                  onChange={e => setIncludeTrwlLink(e.target.checked)}
+                />
               </Form.Group>
 
               <Button variant="primary" type="submit" onClick={handleSubmit}>

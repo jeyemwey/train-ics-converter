@@ -69,6 +69,7 @@ app.get('/journeys', async (req, res) => {
 /**
  * @route GET /cal
  * @param refreshToken Token that identifies a journey including all legs on a specific day
+ * @param includeTrwlLink Include the träwelling link in the calendar description
  */
 app.get("/cal", async (req, res) => {
     const token_encoded = req.query.refreshToken;
@@ -84,8 +85,10 @@ app.get("/cal", async (req, res) => {
 
     const departureTZOffset = reqDepartureTZOffset - new Date().getTimezoneOffset(); // also remove the server tz offset
 
-    const journey = await client.refreshJourney(token);
-    const calendar = toCalendar(journey, departureTZOffset);
+    const includeTrwlLink = (req.query.includeTrwlLink as string) === "true"
+
+    const journey = await client.refreshJourney(token, {stopovers: true});
+    const calendar = toCalendar({journey, departureTZOffset, includeTrwlLink});
 
     return calendar.serve(res);
 });

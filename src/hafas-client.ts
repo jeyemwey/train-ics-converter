@@ -44,7 +44,7 @@ type Operator = Id | { type: 'operator', id: Id, name: string }
 
 export type Leg = ArrivingDepartingWithPossibleDelay & {
     type: 'leg', // required
-    id?: Id, // unique, optional
+    tripId?: Id, // unique, optional
     origin: StationRef,
     destination: StationRef,
     departurePlatform?: string, // string, optional
