@@ -49,15 +49,15 @@ const getEmoji = (leg: Leg): string => {
     }
 }
 
-const getStopovers = (leg: Leg): string => {
+const getStopovers = (leg: Leg, departureTZOffset: number): string => {
     // drop the first and last leg
     leg.stopovers.shift();
     leg.stopovers.pop();
     
     return leg.stopovers.map((s) => {
-        const arrival = s.arrival === null ? "" : `an: ${toShortDate(s.arrival, 0)}${s.arrivalDelay ? ` + ${s.arrivalDelay}min` : ""}`;
+        const arrival = s.arrival === null ? "" : `an: ${toShortDate(s.arrival, departureTZOffset)}${s.arrivalDelay ? ` + ${s.arrivalDelay}min` : ""}`;
         const splitter = s.arrival !== null && s.departure !== null ? ", " : "";
-        const departure = s.departure === null ? "" : `ab: ${toShortDate(s.departure, 0)}${s.departureDelay ? ` + ${s.departureDelay}min` : ""}`;
+        const departure = s.departure === null ? "" : `ab: ${toShortDate(s.departure, departureTZOffset)}${s.departureDelay ? ` + ${s.departureDelay}min` : ""}`;
         return `${s.stop.name} (${arrival}${splitter}${departure})`;
     }
     ).join(", ");
@@ -102,7 +102,7 @@ export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMar
          || leg.stopovers.length === 2) { // origin and destination are part of the stopovers list, if available
         leg.stopovers = [];
     } 
-    const stopoverList = (leg.stopovers.length !== 0) ? `\nZwischenstop${leg.stopovers.length === 3 ? "" : "s"}: ${getStopovers(leg)}` : "";
+    const stopoverList = (leg.stopovers.length !== 0) ? `\nZwischenstop${leg.stopovers.length === 3 ? "" : "s"}: ${getStopovers(leg, departureTZOffset)}` : "";
 
     return {
         summary: `${getEmoji(leg)} ${leg.line?.name}: ${leg.origin.name}${departurePlatform} -> ${leg.destination.name}${arrivalPlatform}`,
