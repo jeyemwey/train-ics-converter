@@ -82,11 +82,9 @@ const getMarudorLink = (leg: Leg): string => {
         return "";
     }
 
-    const base_url = "https://marudor.de/details/";
+    const base_url = "https://marudor.de/api/hafas/v1/detailsRedirect/";
 
-    // TODO: Check if there is a cleaner way, e.g. with leg.tripId
-    // see: https://github.com/marudor/BahnhofsAbfahrten/issues/528
-    return `\n\nMarudor-Link: ` + base_url + leg.line.productName + " " + leg.line.fahrtNr + "/" + leg.departure + "?station=" + leg.origin.id;
+    return `\n\nMarudor-Link: ` + base_url + encodeURIComponent(leg.tripId);
 }
 
 export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMarudorLink }: { leg: Leg, departureTZOffset: number, includeTrwlLink: boolean, includeMarudorLink: boolean }): Event | null => {
