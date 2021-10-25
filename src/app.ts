@@ -42,6 +42,10 @@ app.get('/journeys', async (req, res) => {
     const departure = new Date(req.query.departure as string);
     const departureTZOffset = parseInt(req.query.departureTZOffset as string);
 
+    if (Object.is(departureTZOffset, NaN)) {
+        return res.status(400).send({ error: "Bad Request: Bad departureTZOffset" })
+    }
+
     if (Object.is(departure.getTime(), NaN)) {
         return res.status(400).send({ error: "Bad Request: Bad departure time" })
     }
@@ -73,9 +77,12 @@ app.get("/cal", async (req, res) => {
 
     const token = decode(token_encoded as string);
 
-    const departureTZOffset = parseInt(req.query.departureTZOffset as string)
-        - new Date().getTimezoneOffset(); // also remove the server tz offset
-    console.log(departureTZOffset)
+    const reqDepartureTZOffset = parseInt(req.query.departureTZOffset as string)
+    if (Object.is(reqDepartureTZOffset, NaN)) {
+        return res.status(400).send({ error: "Bad Request: Bad departureTZOffset" })
+    }
+
+    const departureTZOffset = reqDepartureTZOffset - new Date().getTimezoneOffset(); // also remove the server tz offset
 
     const journey = await client.refreshJourney(token);
     const calendar = toCalendar(journey, departureTZOffset);
