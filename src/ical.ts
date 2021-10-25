@@ -1,7 +1,6 @@
 import { Journey, Leg, Product } from "./hafas-client"
 import { dateWithDelay, toShortDate } from "./date-utils"
 import ical, { ICalCalendar } from 'ical-generator';
-import { getVtimezoneComponent } from "@touch4it/ical-timezones";
 
 export type Event = {
     summary: string;
@@ -55,9 +54,9 @@ const getStopovers = (leg: Leg, departureTZOffset: number): string => {
     leg.stopovers.pop();
     
     return leg.stopovers.map((s) => {
-        const arrival = s.arrival === null ? "" : `an: ${toShortDate(s.arrival, departureTZOffset)}${s.arrivalDelay ? ` + ${s.arrivalDelay}min` : ""}`;
+        const arrival = s.arrival === null ? "" : `an: ${toShortDate(s.arrival, departureTZOffset)}${s.arrivalDelay ? ` + ${s.arrivalDelay / 60}min` : ""}`;
         const splitter = s.arrival !== null && s.departure !== null ? ", " : "";
-        const departure = s.departure === null ? "" : `ab: ${toShortDate(s.departure, departureTZOffset)}${s.departureDelay ? ` + ${s.departureDelay}min` : ""}`;
+        const departure = s.departure === null ? "" : `ab: ${toShortDate(s.departure, departureTZOffset)}${s.departureDelay ? ` + ${s.departureDelay / 60}min` : ""}`;
         return `${s.stop.name} (${arrival}${splitter}${departure})`;
     }
     ).join(", ");
@@ -93,10 +92,10 @@ export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMar
     }
 
     const departurePlatform = leg.departurePlatform ? ` (Gl. ${leg.departurePlatform})` : "";
-    const departure = dateWithDelay(leg.departure, leg.departureDelay - departureTZOffset);
+    const departure = dateWithDelay(leg.departure, (leg.departureDelay / 60) - departureTZOffset);
 
     const arrivalPlatform = leg.arrivalPlatform ? ` (Gl. ${leg.arrivalPlatform})` : "";
-    const arrival = dateWithDelay(leg.arrival, leg.arrivalDelay - departureTZOffset);
+    const arrival = dateWithDelay(leg.arrival, (leg.arrivalDelay / 60) - departureTZOffset);
 
     if (typeof leg.stopovers === "undefined"
          || leg.stopovers.length === 2) { // origin and destination are part of the stopovers list, if available

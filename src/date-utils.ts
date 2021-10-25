@@ -7,8 +7,8 @@ export type ArrivingDepartingWithPossibleDelay = ({
     arrival: IsoDate | null,
     departure: IsoDate
 }) & {
-    arrivalDelay?: number,
-    departureDelay?: number,
+    arrivalDelay?: number, // in seconds
+    departureDelay?: number, // in seconds
 
     plannedArrival: IsoDate,
     plannedDeparture?: IsoDate,
