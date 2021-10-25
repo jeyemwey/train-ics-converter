@@ -32,6 +32,7 @@ function App() {
   const [departureInvalid, setDepartureInvalid] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | undefined>("");
+  const [includeMarudorLink, setIncludeMarudorLink] = useState(false);
   const [includeTrwlLink, setIncludeTrwlLink] = useState(false);
 
   useEffect(() => {
@@ -86,7 +87,8 @@ function App() {
     <Button href={BACKEND_URL + "cal?" + new URLSearchParams({
       refreshToken,
       departureTZOffset: departure.getTimezoneOffset().toString(),
-      includeTrwlLink: includeTrwlLink ? "true" : "false"
+      includeTrwlLink: includeTrwlLink ? "true" : "false",
+      includeMarudorLink: includeMarudorLink ? "true" : "false"
     })}>Kalender</Button>;
 
   return (
@@ -143,6 +145,15 @@ function App() {
                   isInvalid={departureInvalid} />
               </Form.Group>
 
+              <Form.Group className="mb-3" controlId="formDestination">
+                <Form.Check
+                  type={"checkbox"}
+                  id={"includeMarudorLink"}
+                  label={"Marudor-Link einfügen"}
+                  checked={includeMarudorLink}
+                  onChange={e => setIncludeMarudorLink(e.target.checked)}
+                />
+              </Form.Group>
               <Form.Group className="mb-3" controlId="formDestination">
                 <Form.Check
                   type={"checkbox"}
