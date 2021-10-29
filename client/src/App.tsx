@@ -14,6 +14,7 @@ import {
 
 import "./App.scss";
 import { BACKEND_URL } from './constants';
+import LocationInput from './LocationInput';
 
 type JourneyResponse = {
   journeyText: string;
@@ -132,24 +133,20 @@ function App() {
             <Form style={{ marginBottom: "2rem" }}>
               <Form.Group className="mb-3" controlId="formOrigin">
                 <Form.Label>Start</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Ort der Abfahrt"
+                <LocationInput
+                  placeholder={"Ort der Abfahrt"}
                   value={from}
-                  onChange={e => setFrom(e.target.value)}
-                  required
-                  isInvalid={fromInvalid} />
+                  valueSetter={setFrom}
+                  invalid={fromInvalid} />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formDestination">
                 <Form.Label>Ziel</Form.Label>
                 <InputGroup className="mb-3">
-                  <Form.Control
-                    type="text"
-                    placeholder="Ort der Ankunft"
+                  <LocationInput
+                    placeholder={"Ort der Ankunft"}
                     value={to}
-                    onChange={e => setTo(e.target.value)}
-                    required
-                    isInvalid={toInvalid} />
+                    valueSetter={setTo}
+                    invalid={toInvalid} />
                   <Button
                     variant="outline-secondary"
                     id="swapOriginAndDepartureButton"
