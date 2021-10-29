@@ -91,7 +91,7 @@ type HafasClient = {
         subStops?: Boolean, // parse & expose sub-stops of stations?
         entrances?: Boolean, // parse & expose entrances of stops/stations?
         linesOfStops?: false, // parse & expose lines at each stop/station?
-        language?: 'en' // language to get results in
+        language?: 'de' | 'en' // language to get results in
     }) => Promise<(Station | Stop | Location)[]>,
     journeys: (from: StationRef | Location, to: StationRef | Location, opt: ({ departure?: Date| string, arrival?: null } | { departure?: null, arrival?: Date| string }) & {
         earlierThan?: never, // ref to get journeys earlier than the last query

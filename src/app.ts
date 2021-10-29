@@ -88,16 +88,25 @@ app.get("/cal", async (req, res) => {
     const includeTrwlLink = (req.query.includeTrwlLink as string) === "true"
     const includeMarudorLink = (req.query.includeMarudorLink as string) === "true"
 
-    const journey = await client.refreshJourney(token, {stopovers: true});
-    const calendar = toCalendar({journey, departureTZOffset, includeTrwlLink, includeMarudorLink});
+    const journey = await client.refreshJourney(token, { stopovers: true });
+    const calendar = toCalendar({ journey, departureTZOffset, includeTrwlLink, includeMarudorLink });
 
     return calendar.serve(res);
 });
 
+app.get('/locationSearch', async (req, res) => {
+    const query = req.query.query as string;
+    if (!query)
+        return res.status(400).send({ error: "Bad Request: query is not valid" });
+
+    const stations = await client.locations(query, { fuzzy: true, results: 10, language: 'de' })
+
+    return res.send({ stations: stations.map(s => s.name) });
+});
 
 app.get('/_health', (req, res) => {
     res.status(200).send('ok')
-})
+});
 
 app.use(express.static(__dirname + "/public"));
 
