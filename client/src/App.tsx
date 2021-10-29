@@ -1,6 +1,16 @@
 
 import React, { MouseEventHandler, ReactElement, useEffect, useState } from 'react';
-import { Alert, Button, Col, Container, Form, Navbar, ProgressBar, Row, Table } from 'react-bootstrap';
+import {
+  Alert,
+  Button,
+  Col,
+  Container,
+  Form,
+  InputGroup,
+  Navbar,
+  Row,
+  Spinner,
+  Table } from 'react-bootstrap';
 
 import "./App.scss";
 import { BACKEND_URL } from './constants';
@@ -38,6 +48,11 @@ function App() {
   useEffect(() => {
     setFormattedDeparture(formatInputDateTime(departure));
   }, [departure]);
+
+  const handleSwapFromAndTo = () => {
+    setTo(from);
+    setFrom(to);
+  }
 
   const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
@@ -127,13 +142,20 @@ function App() {
               </Form.Group>
               <Form.Group className="mb-3" controlId="formDestination">
                 <Form.Label>Ziel</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Ort der Ankunft"
-                  value={to}
-                  onChange={e => setTo(e.target.value)}
-                  required
-                  isInvalid={toInvalid} />
+                <InputGroup className="mb-3">
+                  <Form.Control
+                    type="text"
+                    placeholder="Ort der Ankunft"
+                    value={to}
+                    onChange={e => setTo(e.target.value)}
+                    required
+                    isInvalid={toInvalid} />
+                  <Button
+                    variant="outline-secondary"
+                    id="swapOriginAndDepartureButton"
+                    onClick={handleSwapFromAndTo}
+                  >🔃</Button>
+                </InputGroup>
               </Form.Group>
               <Form.Group className="mb-3" controlId="formDestination">
                 <Form.Label>Abfahrtzeit</Form.Label>
@@ -164,29 +186,36 @@ function App() {
                 />
               </Form.Group>
 
-              <Button variant="primary" type="submit" onClick={handleSubmit}>
-                Submit
+              <Button variant="primary" type="submit" onClick={handleSubmit} disabled={pending}>
+                {pending ? <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                /> : "Submit"}
               </Button>
             </Form>
           </Col>
           <Col md={6}>
-            <Table striped bordered hover style={{ marginBottom: "2rem" }}>
-              <thead>
-                <tr>
-                  <th>Reise</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {journeys.map(journey => <tr>
-                  <td>{journey.journeyText}</td>
-                  <td>{icalButton(journey.refreshToken)}</td>
-                </tr>)}
-              </tbody>
-            </Table>
+            {journeys.length === 0 ? <p></p> :
+              <Table striped bordered hover style={{ marginBottom: "2rem" }}>
+                <thead>
+                  <tr>
+                    <th>Reise</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {journeys.map(journey => <tr>
+                    <td>{journey.journeyText}</td>
+                    <td>{icalButton(journey.refreshToken)}</td>
+                  </tr>)}
+                </tbody>
+              </Table>
+            }
 
             {error && <Alert variant={'danger'} style={{ marginBottom: "2rem" }}>{error}</Alert>}
-            {pending && <ProgressBar animated now={100} />}
           </Col>
         </Row>
       </Container>
