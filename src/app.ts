@@ -119,3 +119,5 @@ app.use(express.static(__dirname + "/public"));
 app.listen(port, () => {
     return console.log(`server is listening on ${port}, running in ${process.env.NODE_ENV} mode`);
 });
+
+export default app;
