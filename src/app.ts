@@ -37,8 +37,14 @@ const journeyText = (j: Journey, departureTZOffset: number) => `${toShortDate(j.
  * @param departure Time of departure in RFC3339/ISO8601 (e.g. 2021-10-06T08:05:00+02:00)
  */
 app.get('/journeys', async (req, res) => {
-    const from = await client.locations(req.query.from as string, { results: 1 })
-    const to = await client.locations(req.query.to as string, { results: 1 })
+    if (!req.query.from) {
+        return res.status(400).send({ error: "Bad Request: Bad from" })
+    }
+
+    if (!req.query.to) {
+        return res.status(400).send({ error: "Bad Request: Bad to" })
+    }
+
     const departure = new Date(req.query.departure as string);
     const departureTZOffset = parseInt(req.query.departureTZOffset as string);
 
@@ -54,9 +60,18 @@ app.get('/journeys', async (req, res) => {
         return res.status(400).send({ error: "Bad Request: Origin equals Destination" })
     }
 
+    if (req.query.from === req.query.via || req.query.via === req.query.to) {
+        return res.status(400).send({ error: "Bad Request: Via stop cannot be used as Origin or Destination" })
+    }
+
+    const from = await client.locations(req.query.from as string, { results: 1 })
+    const to = await client.locations(req.query.to as string, { results: 1 })
+    const via = req.query.via ? await client.locations(req.query.via as string, { results: 1 }) : null
+
     const journeys = (await client.journeys(from[0], to[0], {
         results: 10,
-        departure: departure
+        departure: departure,
+        via: via ? via[0] : null // stationRef or null if not given
     }))
         .journeys.map(j => ({
             journeyText: journeyText(j, departureTZOffset),
@@ -88,8 +103,8 @@ app.get("/cal", async (req, res) => {
     const includeTrwlLink = (req.query.includeTrwlLink as string) === "true"
     const includeMarudorLink = (req.query.includeMarudorLink as string) === "true"
 
-    const journey = await client.refreshJourney(token, {stopovers: true});
-    const calendar = toCalendar({journey, departureTZOffset, includeTrwlLink, includeMarudorLink});
+    const journey = await client.refreshJourney(token, { stopovers: true });
+    const calendar = toCalendar({ journey, departureTZOffset, includeTrwlLink, includeMarudorLink });
 
     return calendar.serve(res);
 });
