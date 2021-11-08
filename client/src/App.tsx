@@ -40,7 +40,7 @@ const useFocus = () => {
     }
   }
 
-  return {htmlElRef, setFocus}
+  return { htmlElRef, setFocus }
 }
 
 function App() {
@@ -59,7 +59,7 @@ function App() {
 
   const [showVia, setShowVia] = useState(false);
   const [via, setVia] = useState<string>("");
-  const {htmlElRef: viaInputRef, setFocus: setViaInputFocus} = useFocus();
+  const { htmlElRef: viaInputRef, setFocus: setViaInputFocus } = useFocus();
 
   useEffect(() => {
     setFormattedDeparture(formatInputDateTime(departure));
@@ -167,11 +167,13 @@ function App() {
                     value={from}
                     onChange={e => setFrom(e.target.value)}
                     required
-                    isInvalid={fromInvalid} />
+                    isInvalid={fromInvalid}
+                    tabIndex={1} />
                   <Button
                     variant="outline-secondary"
                     id="swapOriginAndDepartureButton"
                     onClick={handleSwapFromAndTo}
+                    tabIndex={10}
                   >🔃</Button>
                 </InputGroup>
               </Form.Group>
@@ -184,35 +186,39 @@ function App() {
                     value={to}
                     onChange={e => setTo(e.target.value)}
                     required
-                    isInvalid={toInvalid} />
+                    isInvalid={toInvalid}
+                    tabIndex={2} />
                   <Button
                     variant="outline-secondary"
                     id="addViaStop"
                     onClick={handleAddVia(true)}
                     disabled={showVia}
+                    tabIndex={9}
                   >➕</Button>
                 </InputGroup>
               </Form.Group>
 
               {showVia && <Form.Group className="mb-3" controlId="formDestination">
                 <Form.Label>Zwischenstop</Form.Label>
-                  <InputGroup className="mb-3">
-                    <Form.Control
-                      type="text"
-                      placeholder="Ort des Unterwegshalts"
-                      value={via}
-                      onChange={e => setVia(e.target.value)}
-                      required
-                      ref={viaInputRef}
-                      />
-                    <Button
-                      variant="outline-secondary"
-                      id="removeViaStop"
-                      onClick={handleAddVia(false)}
-                      disabled={!showVia}
-                    >✖️</Button>
-                  </InputGroup>
-                </Form.Group>
+                <InputGroup className="mb-3">
+                  <Form.Control
+                    type="text"
+                    placeholder="Ort des Unterwegshalts"
+                    value={via}
+                    onChange={e => setVia(e.target.value)}
+                    required
+                    ref={viaInputRef}
+                    tabIndex={7}
+                  />
+                  <Button
+                    variant="outline-secondary"
+                    id="removeViaStop"
+                    onClick={handleAddVia(false)}
+                    disabled={!showVia}
+                    tabIndex={8}
+                  >✖️</Button>
+                </InputGroup>
+              </Form.Group>
               }
               <Form.Group className="mb-3" controlId="formDestination">
                 <Form.Label>Abfahrtzeit</Form.Label>
@@ -221,7 +227,8 @@ function App() {
                   value={formattedDeparture}
                   onChange={e => setDeparture(new Date(e.target.value))}
                   required
-                  isInvalid={departureInvalid} />
+                  isInvalid={departureInvalid}
+                  tabIndex={3} />
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="formDestination">
@@ -231,6 +238,7 @@ function App() {
                   label={"Marudor-Link einfügen"}
                   checked={includeMarudorLink}
                   onChange={e => setIncludeMarudorLink(e.target.checked)}
+                  tabIndex={5}
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formDestination">
@@ -240,10 +248,11 @@ function App() {
                   label={"Träwelling Check-in-Link einfügen"}
                   checked={includeTrwlLink}
                   onChange={e => setIncludeTrwlLink(e.target.checked)}
+                  tabIndex={6}
                 />
               </Form.Group>
 
-              <Button variant="primary" type="submit" onClick={handleSubmit} disabled={pending}>
+              <Button variant="primary" type="submit" onClick={handleSubmit} disabled={pending} tabIndex={4}>
                 {pending ? <Spinner
                   as="span"
                   animation="border"
