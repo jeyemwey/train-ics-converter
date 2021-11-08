@@ -97,7 +97,7 @@ type HafasClient = {
         earlierThan?: never, // ref to get journeys earlier than the last query
         laterThan?: never, // ref to get journeys later than the last query
         results?: null | Number, // number of journeys – `null` means "whatever HAFAS returns"
-        via?: null | StationRef, // let journeys pass this station
+        via?: null | StationRef | Location, // let journeys pass this station
         stopovers?: Boolean, // return stations on the way?
         transfers?: -1 | Number, // Maximum nr of transfers. Default?: Let HAFAS decide.
         transferTime?: Number, // minimum time for a single transfer in minutes
