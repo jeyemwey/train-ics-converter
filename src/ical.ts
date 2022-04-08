@@ -92,7 +92,13 @@ const getMarudorLink = (leg: Leg): string => {
     return `\n\nMarudor-Link: ` + base_url + encodeURIComponent(leg.tripId);
 }
 
-export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMarudorLink }: { leg: Leg, departureTZOffset: number, includeTrwlLink: boolean, includeMarudorLink: boolean }): Event | null => {
+const getTravelynxLink = (leg: Leg): string => {
+    const base_url = "https://travelynx.de/s/";
+
+    return `\n\nTravelynx-Link: ${base_url}${leg.origin.id}?train=` + encodeURIComponent(`${leg.line.productName} ${leg.line.fahrtNr}`);
+}
+
+export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMarudorLink, includeTravelynxLink }: { leg: Leg, departureTZOffset: number, includeTrwlLink: boolean, includeMarudorLink: boolean, includeTravelynxLink: boolean }): Event | null => {
     if (leg.mode === "walking" || leg.mode === "bicycle" || leg.walking) {
         return null
     }
@@ -111,17 +117,17 @@ export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMar
 
     return {
         summary: `${getEmoji(leg)}${getCancelledEmoji(leg)} ${leg.line?.name}: ${leg.origin.name}${departurePlatform} -> ${leg.destination.name}${arrivalPlatform}`,
-        description: `${getCancelledText(leg)}${leg.line.operator?.name ? `Betreiber: ${leg.line.operator.name}` : ""}${stopoverList}${includeTrwlLink ? `${getTrwlLink(leg)}` : ""}${includeMarudorLink ? `${getMarudorLink(leg)}` : ""}`,
+        description: `${getCancelledText(leg)}${leg.line.operator?.name ? `Betreiber: ${leg.line.operator.name}` : ""}${stopoverList}${includeTrwlLink ? `${getTrwlLink(leg)}` : ""}${includeTravelynxLink ? `${getTravelynxLink(leg)}` : ""}${includeMarudorLink ? `${getMarudorLink(leg)}` : ""}`,
         start: departure,
         end: arrival,
         location: leg.origin.name
     }
 }
 
-export const toCalendar = ({ journey, departureTZOffset, includeTrwlLink, includeMarudorLink }: { journey: Journey, departureTZOffset: number, includeTrwlLink: boolean, includeMarudorLink: boolean }): ICalCalendar => {
+export const toCalendar = ({ journey, departureTZOffset, includeTrwlLink, includeMarudorLink, includeTravelynxLink }: { journey: Journey, departureTZOffset: number, includeTrwlLink: boolean, includeMarudorLink: boolean, includeTravelynxLink: boolean }): ICalCalendar => {
     const origin = journey.legs[0].origin.name
     const destination = journey.legs[journey.legs.length - 1].destination.name
-    const events = journey.legs.map(leg => legToEvent({ leg, departureTZOffset, includeTrwlLink, includeMarudorLink })).filter(e => e !== null)
+    const events = journey.legs.map(leg => legToEvent({ leg, departureTZOffset, includeTrwlLink, includeMarudorLink, includeTravelynxLink })).filter(e => e !== null)
 
     const calendar = ical({
         name: `Reise von ${origin} nach ${destination}`,

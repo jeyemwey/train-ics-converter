@@ -102,9 +102,10 @@ app.get("/cal", async (req, res) => {
 
     const includeTrwlLink = (req.query.includeTrwlLink as string) === "true"
     const includeMarudorLink = (req.query.includeMarudorLink as string) === "true"
+    const includeTravelynxLink = (req.query.includeTravelynxLink as string) === "true"
 
     const journey = await client.refreshJourney(token, { stopovers: true });
-    const calendar = toCalendar({ journey, departureTZOffset, includeTrwlLink, includeMarudorLink });
+    const calendar = toCalendar({ journey, departureTZOffset, includeTrwlLink, includeMarudorLink, includeTravelynxLink });
 
     return calendar.serve(res);
 });
