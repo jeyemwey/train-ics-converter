@@ -28,7 +28,7 @@ const lineDesc = (l: Leg) => {
 
     return "other"
 }
-const journeyText = (j: Journey, departureTZOffset: number) => `${toShortDate(j.legs[0].departure, departureTZOffset)} => ${toShortDate(j.legs[j.legs.length - 1].arrival, departureTZOffset)}: ${j.legs.map(lineDesc).join(", ")}`
+const journeyText = (j: Journey, departureTZOffset: number) => `${toShortDate(j.legs[0].departure, departureTZOffset)} → ${toShortDate(j.legs[j.legs.length - 1].arrival, departureTZOffset)}: ${j.legs.map(lineDesc).join(", ")}`
 
 /**
  * @route GET /journeys

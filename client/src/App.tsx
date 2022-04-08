@@ -61,6 +61,10 @@ function App() {
   const [via, setVia] = useState<string>("");
   const { htmlElRef: viaInputRef, setFocus: setViaInputFocus } = useFocus();
 
+  const [darkMode, setDarkMode] = useState(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) { setDarkMode(current => !current) });
+
   useEffect(() => {
     setFormattedDeparture(formatInputDateTime(departure));
   }, [departure]);
@@ -136,7 +140,7 @@ function App() {
 
   return (
     <>
-      <Navbar collapseOnSelect expand="md">
+      <Navbar collapseOnSelect expand="md" variant={darkMode ? "dark" : "light"}>
         <Container>
           <Navbar.Brand href="#home"><img
             src="/train.png"

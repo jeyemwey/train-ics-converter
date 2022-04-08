@@ -1,8 +1,33 @@
-$theme-colors: (
-    "info": tomato,
+$theme-colors: ("info": tomato,
     "danger": teal,
     "primary": green,
-    "secondary": #ced4da
-);
+    "secondary": #ced4da);
 
 @import "~bootstrap/scss/bootstrap";
+@media (prefers-color-scheme: dark) {
+
+    body,
+    .form-control,
+    .table {
+        background-color: #1F2023;
+        color: #DADADA;
+    }
+
+    * {
+        --bs-table-hover-color: #DADADA;
+        --bs-table-bg: #1F2023;
+    }
+
+    .table-striped>tbody>tr:nth-of-type(odd) {
+        color: #DADADA;
+    }
+
+    .form-control:focus {
+        color: #f0f0f0;
+        background-color: #333437;
+    }
+}
+
+.table {
+    vertical-align: middle;
+}
