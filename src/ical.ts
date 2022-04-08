@@ -48,11 +48,17 @@ const getEmoji = (leg: Leg): string => {
     }
 }
 
+const getCancelledEmoji = ({ cancelled }: Leg): string =>
+    cancelled ? "⛔" : ""
+
+const getCancelledText = ({ cancelled }: Leg): string =>
+    cancelled ? "🚨🚨 Achtung! Zug fällt aus! 🚨🚨\n\n" : ""
+
 const getStopovers = (leg: Leg, departureTZOffset: number): string => {
     // drop the first and last leg
     leg.stopovers.shift();
     leg.stopovers.pop();
-    
+
     return leg.stopovers.map((s) => {
         const arrival = s.arrival === null ? "" : `an: ${toShortDate(s.arrival, departureTZOffset)}${s.arrivalDelay ? ` + ${s.arrivalDelay / 60}min` : ""}`;
         const splitter = s.arrival !== null && s.departure !== null ? ", " : "";
@@ -92,20 +98,20 @@ export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMar
     }
 
     const departurePlatform = leg.departurePlatform ? ` (Gl. ${leg.departurePlatform})` : "";
-    const departure = dateWithDelay(leg.departure, (leg.departureDelay / 60) - departureTZOffset);
+    const departure = dateWithDelay(leg.departure ?? leg.plannedDeparture, (leg.departureDelay / 60) - departureTZOffset);
 
     const arrivalPlatform = leg.arrivalPlatform ? ` (Gl. ${leg.arrivalPlatform})` : "";
-    const arrival = dateWithDelay(leg.arrival, (leg.arrivalDelay / 60) - departureTZOffset);
+    const arrival = dateWithDelay(leg.arrival ?? leg.plannedArrival, (leg.arrivalDelay / 60) - departureTZOffset);
 
     if (typeof leg.stopovers === "undefined"
-         || leg.stopovers.length === 2) { // origin and destination are part of the stopovers list, if available
+        || leg.stopovers.length === 2) { // origin and destination are part of the stopovers list, if available
         leg.stopovers = [];
-    } 
+    }
     const stopoverList = (leg.stopovers.length !== 0) ? `\nZwischenstop${leg.stopovers.length === 3 ? "" : "s"}: ${getStopovers(leg, departureTZOffset)}` : "";
 
     return {
-        summary: `${getEmoji(leg)} ${leg.line?.name}: ${leg.origin.name}${departurePlatform} -> ${leg.destination.name}${arrivalPlatform}`,
-        description: `${leg.line.operator?.name ? `Betreiber: ${leg.line.operator.name}` : ""}${stopoverList}${includeTrwlLink ? `${getTrwlLink(leg)}` : ""}${includeMarudorLink ? `${getMarudorLink(leg)}` : ""}`,
+        summary: `${getEmoji(leg)}${getCancelledEmoji(leg)} ${leg.line?.name}: ${leg.origin.name}${departurePlatform} -> ${leg.destination.name}${arrivalPlatform}`,
+        description: `${getCancelledText(leg)}${leg.line.operator?.name ? `Betreiber: ${leg.line.operator.name}` : ""}${stopoverList}${includeTrwlLink ? `${getTrwlLink(leg)}` : ""}${includeMarudorLink ? `${getMarudorLink(leg)}` : ""}`,
         start: departure,
         end: arrival,
         location: leg.origin.name

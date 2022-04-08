@@ -58,7 +58,8 @@ export type Leg = ArrivingDepartingWithPossibleDelay & {
     price: Price,
     loadFactor?: 'very-high' | string,
     line: Line,
-    walking?: Boolean
+    walking?: Boolean,
+    cancelled?: Boolean
 }
 type Line = {
     type: "line",
