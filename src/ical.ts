@@ -1,4 +1,4 @@
-import { Journey, Leg, Product } from "./hafas-client"
+import { Journey, Leg, Product, Remark } from "./hafas-client"
 import { dateWithDelay, toShortDate } from "./date-utils"
 import ical, { ICalCalendar } from 'ical-generator';
 
@@ -98,6 +98,103 @@ const getTravelynxLink = (leg: Leg): string => {
     return `\n\nTravelynx-Link: ${base_url}${leg.origin.id}?train=` + encodeURIComponent(`${leg.line.productName} ${leg.line.fahrtNr}`);
 }
 
+const getRemarkEmoji = (r: Remark): string => {
+    if (r.code === "on-board-restaurant" || r.code === "on-board-bistro" || r.code === "KG" || r.code === "BW" || r.code === "MN") {
+        return '🍴'
+    }
+
+    if (r.code === "55") {
+        return "🚭";
+    }
+
+    if ((r.text && r.text.toLowerCase().includes("mask")) || r.code === "3G") {
+        return '🤿';
+    }
+    if (r.code === "komfort-checkin") {
+        return '🧸';
+    }
+
+    if (r.code === "wifi") {
+        return '📡';
+    }
+
+    if (r.code === "power-sockets") {
+        return '🔌';
+    }
+
+    if (r.code === "GL") {
+        return '👥';
+    }
+
+    if (r.code === "SL") {
+        return '🛏️';
+    }
+
+    if (r.code === "ice-sprinter") {
+        return '⚡';
+    }
+
+    if (r.code === "journey-cancelled") {
+        return '⛔';
+    }
+
+    if (r.code === "snacks") {
+        return '🥨';
+    }
+
+    if (r.code === "parents-childrens-compartment") {
+        return '👪';
+    }
+
+    if (r.code === "SA") {
+        return '🍼';
+    }
+
+    if (r.code && (r.code === "boarding-ramp" || r.code === "EA" || r.code === "EI" || r.code === "ER" || r.code.includes("wheelchairs") || r.code.includes("barrier"))) {
+        return '♿';
+    }
+
+    if (r.code && (r.code.includes("bicycle"))) {
+        return '🚲';
+    }
+
+    if (r.text && (r.text.includes("WC") || r.text.includes("toilette") || r.text.includes("restroom"))) {
+        return '🚾';
+    }
+
+    if (r.text && (r.text.includes("Baustelle") || r.text.includes("Baumaßnahmen") || r.text.includes("construction"))) {
+        return '🚧';
+    }
+
+    if (r.text && r.text.toLowerCase().includes("krank")) {
+        return '🤒';
+    }
+
+    if (r.type === "hint") {
+        return 'ℹ️';
+    }
+
+    if (r.type === "warning") {
+        return '⚠️';
+    }
+
+    if (r.type === "status") {
+        return '📜';
+    }
+
+    console.warn(`Found unknown remark type!: ${JSON.stringify(r)}`);
+
+    return '⚠️';
+}
+
+const getRemarks = (remarks: Remark[] | null): string => {
+    if (!remarks) return '';
+
+    const allRemarks = remarks.map(r => getRemarkEmoji(r) + " " + r.text).join("\n");
+
+    return `\n\nHinweise:\n${allRemarks}`;
+}
+
 export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMarudorLink, includeTravelynxLink }: { leg: Leg, departureTZOffset: number, includeTrwlLink: boolean, includeMarudorLink: boolean, includeTravelynxLink: boolean }): Event | null => {
     if (leg.mode === "walking" || leg.mode === "bicycle" || leg.walking) {
         return null
@@ -117,7 +214,7 @@ export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMar
 
     return {
         summary: `${getEmoji(leg)}${getCancelledEmoji(leg)} ${leg.line?.name}: ${leg.origin.name}${departurePlatform} -> ${leg.destination.name}${arrivalPlatform}`,
-        description: `${getCancelledText(leg)}${leg.line.operator?.name ? `Betreiber: ${leg.line.operator.name}` : ""}${stopoverList}${includeTrwlLink ? `${getTrwlLink(leg)}` : ""}${includeTravelynxLink ? `${getTravelynxLink(leg)}` : ""}${includeMarudorLink ? `${getMarudorLink(leg)}` : ""}`,
+        description: `${getCancelledText(leg)}${leg.line.operator?.name ? `Betreiber: ${leg.line.operator.name}` : ""}${stopoverList}${includeTrwlLink ? `${getTrwlLink(leg)}` : ""}${includeTravelynxLink ? `${getTravelynxLink(leg)}` : ""}${includeMarudorLink ? `${getMarudorLink(leg)}` : ""}${getRemarks(leg.remarks)}`,
         start: departure,
         end: arrival,
         location: leg.origin.name
