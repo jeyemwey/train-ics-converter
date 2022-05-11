@@ -16,10 +16,7 @@ $theme-colors: ("info": tomato,
     * {
         --bs-table-hover-color: #DADADA;
         --bs-table-bg: #1F2023;
-    }
-
-    .table-striped>tbody>tr:nth-of-type(odd) {
-        color: #DADADA;
+        --bs-table-striped-color: var(--bs-table-hover-color);
     }
 
     .form-control:focus {
