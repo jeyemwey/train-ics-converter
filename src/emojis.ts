@@ -74,13 +74,25 @@ export const getRemarkEmoji = (r: Remark): string => {
             return '🥨';
         case "wifi":
             return '📡';
+        case "air-conditioned":
+            return '🥶';
+        case "RE":
+        case "NJ":
+            return '🎟';
+        case "text.journeystop.product.or.direction.changes.journey.message":
+            return '🛸';
     }
 
-    if (r.code && (r.code.includes("barrier") || r.code.includes("wheelchair"))) {
+    if (r.code && (r.code.includes("barrier") || r.code.includes("wheelchair")) || (r.text && r.text.includes("wheelchair users"))) {
         return '♿';
     }
 
-    if (r.text && (r.text.includes("Baustelle") || r.text.includes("Baumaßnahmen") || r.text.includes("construction"))) {
+    if (r.text && (r.text.includes("Baustelle")
+        || r.text.includes("Baumaßnahmen")
+        || r.text.includes("Bauarbeiten")
+        || r.text.includes("Reparatur")
+        || r.text.toLowerCase().includes("construction")
+        || r.text.toLowerCase().includes("train rerouting"))) {
         return '🚧';
     }
 
@@ -98,6 +110,10 @@ export const getRemarkEmoji = (r: Remark): string => {
 
     if (r.text && (r.text.includes("restroom") || r.text.includes("toilette") || r.text.includes("WC"))) {
         return '🚾';
+    }
+
+    if (r.text && r.text.includes("Aufzug")) {
+        return '🛗';
     }
 
     console.warn(`Found unknown remark type!: ${JSON.stringify(r)}`);
