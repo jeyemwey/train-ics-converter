@@ -2,7 +2,7 @@ import { Journey, Leg, Product, Remark } from "./hafas-client"
 import { dateWithDelay, toShortDate } from "./date-utils"
 import ical, { ICalCalendar } from 'ical-generator';
 import { getEmoji, getRemarkEmoji } from "./emojis";
-import { getMarudorLink, getTravelynxLink, getTrwlLink } from "./external-links";
+import { getBahnExpertLink, getTravelynxLink, getTrwlLink } from "./external-links";
 
 export type Event = {
     summary: string;
@@ -16,7 +16,7 @@ export type Event = {
 export type UserConfig = {
     departureTZOffset: number;
     includeTrwlLink: boolean;
-    includeMarudorLink: boolean;
+    includeBahnExpertLink: boolean;
     includeTravelynxLink: boolean;
 }
 
@@ -46,7 +46,7 @@ const getRemarks = (remarks: Remark[] | null): string => {
     return `\n\nHinweise:\n${allRemarks}`;
 }
 
-export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMarudorLink, includeTravelynxLink }: UserConfig & { leg: Leg }): Event | null => {
+export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeBahnExpertLink, includeTravelynxLink }: UserConfig & { leg: Leg }): Event | null => {
     if (leg.mode === "walking" || leg.mode === "bicycle" || leg.walking) {
         return null
     }
@@ -73,7 +73,7 @@ export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMar
             + stopoverList
             + (includeTrwlLink ? getTrwlLink(leg) : "")
             + (includeTravelynxLink ? getTravelynxLink(leg) : "")
-            + (includeMarudorLink ? getMarudorLink(leg) : "")
+            + (includeBahnExpertLink ? getBahnExpertLink(leg) : "")
             + getRemarks(leg.remarks),
         start: departure,
         end: arrival,
@@ -81,10 +81,10 @@ export const legToEvent = ({ leg, departureTZOffset, includeTrwlLink, includeMar
     }
 }
 
-export const toCalendar = ({ journey, departureTZOffset, includeTrwlLink, includeMarudorLink, includeTravelynxLink }: UserConfig & { journey: Journey }): ICalCalendar => {
+export const toCalendar = ({ journey, departureTZOffset, includeTrwlLink, includeBahnExpertLink, includeTravelynxLink }: UserConfig & { journey: Journey }): ICalCalendar => {
     const origin = journey.legs[0].origin.name
     const destination = journey.legs[journey.legs.length - 1].destination.name
-    const events = journey.legs.map(leg => legToEvent({ leg, departureTZOffset, includeTrwlLink, includeMarudorLink, includeTravelynxLink })).filter(e => e !== null)
+    const events = journey.legs.map(leg => legToEvent({ leg, departureTZOffset, includeTrwlLink, includeBahnExpertLink, includeTravelynxLink })).filter(e => e !== null)
 
     const calendar = ical({
         name: `Reise von ${origin} nach ${destination}`,

@@ -101,11 +101,11 @@ app.get("/cal", async (req, res) => {
     const departureTZOffset = reqDepartureTZOffset - new Date().getTimezoneOffset(); // also remove the server tz offset
 
     const includeTrwlLink = (req.query.includeTrwlLink as string) === "true"
-    const includeMarudorLink = (req.query.includeMarudorLink as string) === "true"
+    const includeBahnExpertLink = (req.query.includeBahnExpertLink as string) === "true"
     const includeTravelynxLink = (req.query.includeTravelynxLink as string) === "true"
 
     const journey = await client.refreshJourney(token, { stopovers: true });
-    const calendar = toCalendar({ journey, departureTZOffset, includeTrwlLink, includeMarudorLink, includeTravelynxLink });
+    const calendar = toCalendar({ journey, departureTZOffset, includeTrwlLink, includeBahnExpertLink, includeTravelynxLink });
 
     return calendar.serve(res);
 });

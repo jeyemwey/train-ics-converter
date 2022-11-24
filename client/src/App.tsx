@@ -54,7 +54,7 @@ function App() {
   const [departureInvalid, setDepartureInvalid] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | undefined>("");
-  const [includeMarudorLink, setIncludeMarudorLink] = useState(false);
+  const [includeBahnExpertLink, setIncludeBahnExpertLink] = useState(false);
   const [includeTrwlLink, setIncludeTrwlLink] = useState(false);
   const [includeTravelynxLink, setIncludeTravelynxLink] = useState(false);
 
@@ -136,7 +136,7 @@ function App() {
       refreshToken,
       departureTZOffset: departure.getTimezoneOffset().toString(),
       includeTrwlLink: includeTrwlLink ? "true" : "false",
-      includeMarudorLink: includeMarudorLink ? "true" : "false",
+      includeBahnExpertLink: includeBahnExpertLink ? "true" : "false",
       includeTravelynxLink: includeTravelynxLink ? "true" : "false"
     })}>Kalender</Button>;
 
@@ -240,10 +240,10 @@ function App() {
               <Form.Group className="mb-3" controlId="formDestination">
                 <Form.Check
                   type={"checkbox"}
-                  id={"includeMarudorLink"}
-                  label={"Marudor-Link einfügen"}
-                  checked={includeMarudorLink}
-                  onChange={e => setIncludeMarudorLink(e.target.checked)}
+                  id={"includeBahnExpertLink"}
+                  label={"bahn.expert-Link einfügen"}
+                  checked={includeBahnExpertLink}
+                  onChange={e => setIncludeBahnExpertLink(e.target.checked)}
                   tabIndex={5}
                 />
               </Form.Group>
