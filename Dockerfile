@@ -1,17 +1,16 @@
 FROM node:16.11.1-slim as express-build
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json tsconfig.json ./
 RUN npm ci --production
 COPY src/ src/
 RUN npm run build --production
 
 FROM node:16.11.1-slim as react-build
 WORKDIR /app
-COPY client/package.json package-lock.json ./
+COPY client/package.json client/package-lock.json client/tsconfig.json ./
 RUN npm ci --production
 COPY client/src/ src/
 COPY client/public/ public/
-WORKDIR /app/client
 RUN npm run build 
 
 FROM node:16.11.1-slim
