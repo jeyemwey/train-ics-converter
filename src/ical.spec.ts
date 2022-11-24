@@ -7,12 +7,12 @@ describe("leg to calendar event", () => {
     const originStopover = {
         arrival: null,
         departure: "2021-10-16T22:00:00+02:00",
-        stop: {name: "Beginn"} as Stop,
+        stop: { name: "Beginn" } as Stop,
     } as Stopover;
     const destinationStopover = {
         arrival: "2021-10-16T22:30:00+02:00",
         departure: null,
-        stop: {name: "Ende"} as Stop,
+        stop: { name: "Ende" } as Stop,
     } as Stopover;
     const baseLeg = {
         departure: "2021-10-16T22:00:00+02:00",
@@ -36,7 +36,7 @@ describe("leg to calendar event", () => {
     it("works for simple leg", () => {
         const leg = { ...baseLeg } as Leg;
 
-        const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeMarudorLink: false, includeTravelynxLink: false });
+        const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
         assert.deepStrictEqual(event, baseEvent);
     });
 
@@ -52,7 +52,7 @@ describe("leg to calendar event", () => {
             summary: "🚆 RE 1: Beginn (Gl. 104 D-G) -> Ende (Gl. 9 3/4)"
         }
 
-        const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeMarudorLink: false, includeTravelynxLink: false });
+        const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
         assert.deepStrictEqual(event, expected);
     });
 
@@ -69,7 +69,7 @@ describe("leg to calendar event", () => {
             end: new Date("2021-10-16T22:40:00Z")
         }
 
-        const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeMarudorLink: false, includeTravelynxLink: false });
+        const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
         assert.deepStrictEqual(event, expected);
     });
 
@@ -97,7 +97,7 @@ describe("leg to calendar event", () => {
                 description: baseEvent.description + "\nZwischenstop: Stopover1 (an: 22:10, ab: 22:11)"
             } as Event;
 
-            const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeMarudorLink: false, includeTravelynxLink: false });
+            const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
             assert.deepStrictEqual(event, expected);
         });
 
@@ -134,7 +134,7 @@ describe("leg to calendar event", () => {
                 description: baseEvent.description + "\nZwischenstops: Stopover1 (an: 22:10, ab: 22:11), Stopover2 (an: 22:20, ab: 22:21)"
             } as Event;
 
-            const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeMarudorLink: false, includeTravelynxLink: false });
+            const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
             assert.deepStrictEqual(event, expected);
         });
 
@@ -161,7 +161,7 @@ describe("leg to calendar event", () => {
                 description: baseEvent.description + "\nZwischenstop: Stopover1 (an: 22:10)"
             } as Event;
 
-            const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeMarudorLink: false, includeTravelynxLink: false });
+            const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
             assert.deepStrictEqual(event, expected);
         });
 
@@ -188,7 +188,7 @@ describe("leg to calendar event", () => {
                 description: baseEvent.description + "\nZwischenstop: Stopover1 (ab: 22:10)"
             } as Event;
 
-            const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeMarudorLink: false, includeTravelynxLink: false });
+            const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
             assert.deepStrictEqual(event, expected);
         });
     });
