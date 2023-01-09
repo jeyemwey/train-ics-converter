@@ -27,7 +27,7 @@
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.35",
     "nodemon": "^2.0.20",
-    "rrule": "^2.6.8",
+    "rrule": "^2.7.1",
     "ts-mocha": "^9.0.0",
     "typescript": "^4.4.3"
   },
@@ -36,7 +36,7 @@
     "cors": "^2.8.5",
     "esbuild": "^0.13.4",
     "express": "^4.17.3",
-    "hafas-client": "^5.19.1",
+    "hafas-client": "^6.0.1",
     "ical-generator": "^3.0.1"
   }
 }
