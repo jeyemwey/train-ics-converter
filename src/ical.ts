@@ -1,8 +1,8 @@
-import { Journey, Leg, Product, Remark } from "./hafas-client"
-import { dateWithDelay, toShortDate } from "./date-utils"
+import { Journey, Leg, Remark } from "./hafas-client.js"
+import { dateWithDelay, toShortDate } from "./date-utils.js"
 import ical, { ICalCalendar } from 'ical-generator';
-import { getEmoji, getRemarkEmoji } from "./emojis";
-import { getBahnExpertLink, getTravelynxLink, getTrwlLink } from "./external-links";
+import { getEmoji, getRemarkEmoji } from "./emojis.js";
+import { getBahnExpertLink, getTravelynxLink, getTrwlLink } from "./external-links.js";
 
 export type Event = {
     summary: string;

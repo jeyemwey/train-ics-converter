@@ -1,4 +1,4 @@
-import { Leg, Product } from "./hafas-client";
+import { Leg, Product } from "./hafas-client.js";
 
 export const getTrwlLink = (leg: Leg): string => {
     const base_url = "https://traewelling.de/trains/trip?";

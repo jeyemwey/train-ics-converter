@@ -1,7 +1,7 @@
 // Import the dependencies for testing
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import app from './app';
+import app from './app.js';
 
 // Configure chai
 chai.use(chaiHttp);

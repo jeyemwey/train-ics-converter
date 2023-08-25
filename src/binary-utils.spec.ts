@@ -1,6 +1,6 @@
 import 'mocha';
 import { strict as assert } from 'assert';
-import { decode, encode } from './binary-utils';
+import { decode, encode } from './binary-utils.js';
 
 describe('x == decode(encode(x))', () => {
   it('for strings', () => {

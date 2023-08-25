@@ -1,7 +1,7 @@
 import 'mocha';
 import { strict as assert } from 'assert';
-import { Event, legToEvent } from './ical';
-import { Leg, Stop, Stopover } from './hafas-client';
+import { Event, legToEvent } from './ical.js';
+import { Leg, Stop, Stopover } from './hafas-client.js';
 
 describe("leg to calendar event", () => {
     const originStopover = {
