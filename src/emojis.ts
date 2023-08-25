@@ -1,4 +1,4 @@
-import { Leg, Remark } from "./hafas-client"
+import { Leg, Remark } from "./hafas-client.js"
 
 export const getEmoji = (leg: Leg): string => {
     switch (leg.line?.product) {

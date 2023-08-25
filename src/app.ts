@@ -1,15 +1,15 @@
-import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import express from 'express';
-import path from 'path';
-import { decode, encode } from './binary-utils';
-import { toShortDate } from './date-utils';
-import { client, Journey, Leg } from './hafas-client';
-import { toCalendar } from './ical';
+import { decode, encode } from './binary-utils.js';
+import { toShortDate } from './date-utils.js';
+import { client, Journey, Leg } from './hafas-client.js';
+import { toCalendar } from './ical.js';
 
 const app = express();
 const port = process.env.PORT ?? 8080;
 
-app.use(function (req, res, next) {
+app.use(function (_req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET');
     res.setHeader('Access-Control-Allow-Headers', 'content-type');
@@ -111,14 +111,14 @@ app.get("/cal", async (req, res) => {
 });
 
 
-app.get('/_health', (req, res) => {
+app.get('/_health', (_req, res) => {
     res.status(200).send('ok')
 })
 
-app.use(express.static(__dirname + "/public"));
+const ___dirname = dirname(fileURLToPath(import.meta.url))
+app.use(express.static(___dirname + "/public"));
+app.use(express.static("client/build")); // for local development
 
-app.listen(port, () => {
-    return console.log(`server is listening on ${port}, running in ${process.env.NODE_ENV} mode`);
-});
+app.listen(port, () => console.log(`server is listening on ${port}, running in ${process.env.NODE_ENV} mode`));
 
 export default app;

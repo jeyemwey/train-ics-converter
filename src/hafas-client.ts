@@ -1,7 +1,7 @@
-import { ArrivingDepartingWithPossibleDelay } from "./date-utils";
+import { ArrivingDepartingWithPossibleDelay } from "./date-utils.js";
 
-const createClient = require('hafas-client')
-const dbProfile = require('hafas-client/p/db')
+import { createClient } from 'hafas-client';
+import { profile as dbProfile } from 'hafas-client/p/db/index.js';
 
 type Id = never
 export type Mode = 'train' | 'bus' | 'watercraft' | 'taxi' | 'gondola' | 'aircraft' | 'car' | 'bicycle' | 'walking';
@@ -151,4 +151,4 @@ type HafasClient = {
 }
 
 // create a client with the Deutsche Bahn profile
-export const client = createClient(dbProfile, 'my-awesome-program') as HafasClient
+export const client = createClient(dbProfile, 'train-ics-Converter') as HafasClient
