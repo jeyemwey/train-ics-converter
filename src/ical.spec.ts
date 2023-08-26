@@ -1,5 +1,4 @@
-import 'mocha';
-import { strict as assert } from 'assert';
+import { describe, it, expect } from 'vitest';
 import { Event, legToEvent } from './ical.js';
 import { Leg, Stop, Stopover } from './hafas-client.js';
 
@@ -26,7 +25,7 @@ describe("leg to calendar event", () => {
     const TIMEZONE_OFFSET = -120;
 
     const baseEvent = {
-        summary: "🚆 RE 1: Beginn -> Ende",
+        summary: "🚆 RE 1: Beginn → Ende",
         location: "Beginn",
         start: new Date("2021-10-16T22:00:00+02:00"),
         end: new Date("2021-10-16T22:30:00+02:00"),
@@ -37,7 +36,7 @@ describe("leg to calendar event", () => {
         const leg = { ...baseLeg } as Leg;
 
         const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
-        assert.deepStrictEqual(event, baseEvent);
+        expect(event).toStrictEqual(baseEvent);
     });
 
     it("shows platforms if given", () => {
@@ -49,11 +48,11 @@ describe("leg to calendar event", () => {
 
         const expected = {
             ...baseEvent,
-            summary: "🚆 RE 1: Beginn (Gl. 104 D-G) -> Ende (Gl. 9 3/4)"
+            summary: "🚆 RE 1: Beginn (Gl. 104 D-G) → Ende (Gl. 9 3/4)"
         }
 
         const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
-        assert.deepStrictEqual(event, expected);
+        expect(event).toStrictEqual(expected);
     });
 
     it("uses delays if given for whole leg", () => {
@@ -70,7 +69,7 @@ describe("leg to calendar event", () => {
         }
 
         const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
-        assert.deepStrictEqual(event, expected);
+        expect(event).toStrictEqual(expected);
     });
 
     describe("shows stopovers", () => {
@@ -98,7 +97,7 @@ describe("leg to calendar event", () => {
             } as Event;
 
             const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
-            assert.deepStrictEqual(event, expected);
+        	expect(event).toStrictEqual(expected);
         });
 
         it("if more than one", () => {
@@ -135,7 +134,7 @@ describe("leg to calendar event", () => {
             } as Event;
 
             const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
-            assert.deepStrictEqual(event, expected);
+        	expect(event).toStrictEqual(expected);
         });
 
         it("if stopover has null departure", () => {
@@ -162,7 +161,7 @@ describe("leg to calendar event", () => {
             } as Event;
 
             const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
-            assert.deepStrictEqual(event, expected);
+        	expect(event).toStrictEqual(expected);
         });
 
         it("if stopover has null arrival", () => {
@@ -189,7 +188,7 @@ describe("leg to calendar event", () => {
             } as Event;
 
             const event = legToEvent({ leg, departureTZOffset: TIMEZONE_OFFSET, includeTrwlLink: false, includeBahnExpertLink: false, includeTravelynxLink: false });
-            assert.deepStrictEqual(event, expected);
+        	expect(event).toStrictEqual(expected);
         });
     });
 });
