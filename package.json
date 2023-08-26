@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tsup src/app.ts --format esm --watch --ignore-watch client --onSuccess 'node dist/app.js'",
     "start": "tsc && node dist/app.js",
-    "test": "ts-mocha src/**/*.spec.ts",
+    "test": "vitest",
     "build": "tsup src/app.ts --format esm --clean --minify"
   },
   "keywords": [],
@@ -15,21 +15,18 @@
   "private": true,
   "license": "ISC",
   "devDependencies": {
-    "@types/chai": "^4.3.5",
     "@types/expect": "^24.3.0",
     "@types/express": "^4.17.1",
     "@types/luxon": "^3.3.1",
-    "@types/mocha": "^10.0.1",
     "@types/node": "^20.5.6",
-    "chai": "^4.3.8",
-    "chai-http": "^4.4.0",
+    "@types/supertest": "^2.0.12",
     "dayjs": "^1.11.9",
-    "mocha": "^10.2.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
     "rrule": "^2.6.8",
-    "ts-mocha": "^10.0.0",
-    "typescript": "^5.2.2"
+    "supertest": "^6.3.3",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.1"
   },
   "dependencies": {
     "@touch4it/ical-timezones": "^1.8.1",
