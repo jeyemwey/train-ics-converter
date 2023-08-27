@@ -8,15 +8,15 @@ import { client, Journey, Leg } from './hafas-client.js';
 import { toCalendar } from './ical.js';
 
 const lineDesc = (l: Leg) => {
-    if (typeof l.line !== "undefined") {
-        return l.line?.name;
-    }
+	if (typeof l.line !== "undefined") {
+		return l.line?.name;
+	}
 
-    if (l.walking!) {
-        return "zu Fuß gehen"
-    }
+	if (l.walking!) {
+		return "zu Fuß gehen"
+	}
 
-    return "other"
+	return "other"
 }
 const journeyText = (j: Journey, departureTZOffset: number) => `${toShortDate(j.legs[0].departure, departureTZOffset)} → ${toShortDate(j.legs[j.legs.length - 1].arrival, departureTZOffset)}: ${j.legs.map(lineDesc).join(", ")}`
 
@@ -76,10 +76,10 @@ export function createServer(express: typeof ex) {
 			departure: departure,
 			via: via ? via[0] : null // stationRef or null if not given
 		}))
-		.journeys.map(j => ({
-			journeyText: journeyText(j, departureTZOffset),
-			refreshToken: encode(j.refreshToken)
-		}))
+			.journeys.map(j => ({
+				journeyText: journeyText(j, departureTZOffset),
+				refreshToken: encode(j.refreshToken)
+			}))
 
 		return res.send({ journeys })
 	})
@@ -92,7 +92,7 @@ export function createServer(express: typeof ex) {
 	app.get("/cal", async (req, res) => {
 		const token_encoded = req.query.refreshToken;
 		if (!token_encoded)
-		return res.status(400).send({ error: "Bad Request: refreshToken is not valid" })
+			return res.status(400).send({ error: "Bad Request: refreshToken is not valid" })
 
 		const token = decode(token_encoded as string);
 
@@ -107,7 +107,7 @@ export function createServer(express: typeof ex) {
 		const includeBahnExpertLink = (req.query.includeBahnExpertLink as string) === "true"
 		const includeTravelynxLink = (req.query.includeTravelynxLink as string) === "true"
 
-		const journey = await client.refreshJourney(token, { stopovers: true });
+		const journey = (await client.refreshJourney(token, { stopovers: true })).journey;
 		const calendar = toCalendar({ journey, departureTZOffset, includeTrwlLink, includeBahnExpertLink, includeTravelynxLink });
 
 		return calendar.serve(res);
@@ -129,8 +129,8 @@ export function createServer(express: typeof ex) {
 // if (import.meta.main) { // does not wokr in node (only deno)
 // (import.meta.url === ('file:///'+process.argv[1].replace(/\\/g,'/')).replace(/\/{3,}/,'///')) // works in node 18+
 if (import.meta.url === url.pathToFileURL(process.argv[1]).href) {
-  // module was not imported but called directly
-  const app = createServer(ex);
-  const port = process.env.PORT ?? 8080;
-  app.listen(port, () => console.log(`server is listening on ${port}, running in ${process.env.NODE_ENV} mode`));
+	// module was not imported but called directly
+	const app = createServer(ex);
+	const port = process.env.PORT ?? 8080;
+	app.listen(port, () => console.log(`server is listening on ${port}, running in ${process.env.NODE_ENV} mode`));
 }

@@ -5,14 +5,14 @@ import { profile as dbProfile } from 'hafas-client/p/db/index.js';
 
 type Id = never
 export type Mode = 'train' | 'bus' | 'watercraft' | 'taxi' | 'gondola' | 'aircraft' | 'car' | 'bicycle' | 'walking';
-export type Product = 'nationalExpress'| 'national'| 'regionalExp'| 'regional'| 'suburban'| 'bus'| 'ferry'| 'subway'| 'tram'| 'taxi';
+export type Product = 'nationalExpress' | 'national' | 'regionalExp' | 'regional' | 'suburban' | 'bus' | 'ferry' | 'subway' | 'tram' | 'taxi';
 
 type Price = { amount: number, currency: 'EUR' | 'GBP' | 'CHF' /* ISO 4217 code, required */ } | { amount: null, hint?: string }
 export type Stopover = ArrivingDepartingWithPossibleDelay & {
-	type: 'stopover',
-	stop: StationRef,
-	arrivalPlatform?: string,
-	departurePlatform?: string,
+    type: 'stopover',
+    stop: StationRef,
+    arrivalPlatform?: string,
+    departurePlatform?: string,
 }
 type StationRef = Id | Station | Stop
 type Station = {
@@ -103,7 +103,7 @@ type HafasClient = {
         linesOfStops?: false, // parse & expose lines at each stop/station?
         language?: 'en' // language to get results in
     }) => Promise<(Station | Stop | Location)[]>,
-    journeys: (from: StationRef | Location, to: StationRef | Location, opt: ({ departure?: Date| string, arrival?: null } | { departure?: null, arrival?: Date| string }) & {
+    journeys: (from: StationRef | Location, to: StationRef | Location, opt: ({ departure?: Date | string, arrival?: null } | { departure?: null, arrival?: Date | string }) & {
         earlierThan?: never, // ref to get journeys earlier than the last query
         laterThan?: never, // ref to get journeys later than the last query
         results?: null | Number, // number of journeys – `null` means "whatever HAFAS returns"
@@ -137,7 +137,7 @@ type HafasClient = {
         earlierRef: never,
         laterRef: never,
         journeys: Journey[],
-        realtimeDataFrom: number | null,
+        realtimeDataUpdatedAt: number,
     }>,
     refreshJourney: (token: string, opt?: {
         stopovers?: Boolean, // return stations on the way?
@@ -147,7 +147,10 @@ type HafasClient = {
         entrances?: Boolean, // parse & expose entrances of stops/stations?
         remarks?: Boolean, // parse & expose hints & warnings?
         language?: 'en' // language to get results in
-    }) => Promise<Journey>
+    }) => Promise<{
+        journey: Journey,
+        realtimeDataUpdatedAt: number,
+    }>
 }
 
 // create a client with the Deutsche Bahn profile
